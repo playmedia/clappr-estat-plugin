@@ -1,0 +1,56 @@
+<head>
+  <script type="text/javascript" src="http://cdn.clappr.io/latest/clappr.js"></script>
+  <script type="text/javascript" src="../dist/clappr-estat-plugin.js"></script>
+</head>
+<body>
+  <div id="player"></div>
+  <script>
+    (function () {
+      // Clappr.Log.setLevel(0)
+      var streamUrl = 'https://static.playmedia-cdn.net/resources/sample/h264_sintel_trailer-1080p.mp4'
+
+      var player = new Clappr.Player({
+        parentId: "#player",
+        source: streamUrl,
+        disableKeyboardShortcuts: true,
+        disableVideoTagContextMenu: true,
+        autoSeekFromUrl: false,
+        // autoPlay: true,
+        plugins: {
+          core: [ClapprEstatPlugin],
+        },
+        estatPlugin: {
+          serial: 'MY-ESTAT-SERIAL', // Replace with the serial provided by Mediametrie.
+          session: {
+            videoName: 'Sintel trailer',
+            level1: '',
+            level2: '',
+            level3: '',
+            level4: '',
+            level5: '',
+            genre: 'Heroic fantasy',
+          },
+          readyCallback: function() { console.log('eStat plugin is ready !') }
+        },
+      })
+
+      // window.reloadStream = function() {
+      //   player.load(streamUrl)
+      // }
+
+      // window.newSession = function() {
+      //   player.estatNewSession({
+      //     videoName: 'Sintel movie trailer',
+      //     level1: '',
+      //     level2: '',
+      //     level3: '',
+      //     level4: '',
+      //     level5: '',
+      //     genre: 'Heroic fantasy',
+      //   })
+      // }
+    })()
+  </script>
+  <!-- <button onclick="reloadStream()">change source</button> -->
+  <!-- <button onclick="newSession()">new session</button> -->
+</body>
