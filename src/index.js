@@ -141,9 +141,13 @@ export default class EstatPlugin extends CorePlugin {
     // Apply only if tracking parameters differs
     if (isEqual(this._session, session)) return
 
-    // Stop current session and start new
+    // Get current play state
+    let playState = this.isPlaying
+
+    // Setup new eStat player session
+    // Note: stop current session and start new only if player is playing
     this.setSession(session)
-    this.onStop()
+    if (playState) this.onStop()
     window.eStat_ms && window.eStat_ms.newStreamUI(
       this.playerElement,
       this._session.videoName,
@@ -154,7 +158,7 @@ export default class EstatPlugin extends CorePlugin {
       this._session.level5,
       this._session.genre,
     )
-    this.onPlay()
+    if (playState) this.onPlay()
   }
 
   eStatSession() {
@@ -176,6 +180,10 @@ export default class EstatPlugin extends CorePlugin {
 
   get playerPosition() {
     return this._container.getPlaybackType() === 'live' ? 0 : this._position
+  }
+
+  get isPlaying() {
+    return this._container.isPlaying()
   }
 
   onTimeUpdate(o){
