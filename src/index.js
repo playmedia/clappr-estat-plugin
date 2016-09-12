@@ -32,6 +32,10 @@ export default class EstatPlugin extends CorePlugin {
       throw new Error(this.name + ' plugin "readyCallback" configuration property is not a function')
     }
 
+    // sendPlayOnce parameter is optional
+    this._playOnce = this.options.estatPlugin.sendPlayOnce === true
+    this._doSendPlay = true
+
     this.eStatSetup()
   }
 
@@ -43,6 +47,7 @@ export default class EstatPlugin extends CorePlugin {
       this.listenTo(this._container, Events.CONTAINER_PLAY, this.onPlay)
       this.listenTo(this._container, Events.CONTAINER_STOP, this.onStop)
       this.listenTo(this._container, Events.CONTAINER_PAUSE, this.onPause)
+      this.listenTo(this._container, Events.CONTAINER_SEEK, this.onSeek)
     }
   }
 
@@ -191,14 +196,24 @@ export default class EstatPlugin extends CorePlugin {
   }
 
   onPlay() {
+    if (this._playOnce) {
+      if (!this._doSendPlay) return
+      this._doSendPlay = false
+    }
     window.eStat_ms && window.eStat_ms.TagDS(this.playerElement).sendEvent(window.eStatPlayState.Play)
   }
 
   onStop() {
     window.eStat_ms && window.eStat_ms.TagDS(this.playerElement).sendEvent(window.eStatPlayState.Stop)
+    if (this._playOnce) this._doSendPlay = true
   }
 
   onPause() {
     window.eStat_ms && window.eStat_ms.TagDS(this.playerElement).sendEvent(window.eStatPlayState.Pause)
+    if (this._playOnce) this._doSendPlay = true
+  }
+
+  onSeek() {
+    if (this._playOnce) this._doSendPlay = true
   }
 }
