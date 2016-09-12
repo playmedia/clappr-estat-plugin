@@ -46,6 +46,8 @@ var player = new Clappr.Player({
 
 `readyCallback` property is an optional callback function called when eStat library is ready.
 
+`sendPlayOnce` property is an optional boolean which indicate if "play" events triggered as the result of "buffer full" during playback are __not__ send to eStat. Default value is `false`. (all "play" events are send).
+
 This plugin also add `estatNewSession` method to Clappr player instance. This optional method may be used for live stream to create a new session when program change or for load another video source without destroying player or changing options.
 
 ```javascript
