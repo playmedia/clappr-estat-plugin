@@ -7,11 +7,19 @@
   <script>
     (function () {
       // Clappr.Log.setLevel(0)
-      var streamUrl = 'https://static.playmedia-cdn.net/resources/sample/h264_sintel_trailer-1080p.mp4'
+
+      // HLS VOD
+      // var videoUrl = 'http://www.streambox.fr/playlists/x36xhzz/x36xhzz.m3u8', videoName = 'Big Buck Bunny'
+
+      // HLS Live with DVR
+      // var videoUrl = 'http://live-api.miraclechannel.com/hls/miracle1.m3u8', videoName = 'Miracle Channel'
+
+      // MP4 VOD
+      var videoUrl = 'https://static.playmedia-cdn.net/resources/sample/h264_sintel_trailer-1080p.mp4', videoName = 'Sintel'
 
       var player = new Clappr.Player({
         parentId: "#player",
-        source: streamUrl,
+        source: videoUrl,
         disableKeyboardShortcuts: true,
         disableVideoTagContextMenu: true,
         autoSeekFromUrl: false,
@@ -20,38 +28,29 @@
           core: [ClapprEstatPlugin],
         },
         estatPlugin: {
-          serial: 'MY-ESTAT-SERIAL', // Replace with the serial provided by Mediametrie.
-          session: {
-            videoName: 'Sintel trailer',
-            level1: '',
-            level2: '',
-            level3: '',
-            level4: '',
-            level5: '',
-            genre: 'Heroic fantasy',
+          // debug: true,
+          // secure: true,
+          eStatTagCfg: {
+            serial: 'ESTAT-STREAMING-SERIAL',
+            streaming: {
+              streamName: videoName,
+              // streamGenre: 'MyVideoGenre',
+              // streamDuration: 1337,
+            },
           },
-          readyCallback: function() { console.log('eStat plugin is ready !') },
-          // sendPlayOnce: true,
-        },
+        }
       })
 
-      // window.reloadStream = function() {
-      //   player.load(streamUrl)
-      // }
-
-      // window.newSession = function() {
-      //   player.estatNewSession({
-      //     videoName: 'Sintel movie trailer',
-      //     level1: '',
-      //     level2: '',
-      //     level3: '',
-      //     level4: '',
-      //     level5: '',
-      //     genre: 'Heroic fantasy',
+      // window.updateEstatTag = function() {
+      //   var tag = player.eStatStreamTag()
+      //   tag.set({
+      //     levels: {
+      //       level_1: 'MyCustomLevel',
+      //     }
       //   })
+      //   console.log('eStatStreamTag', tag)
       // }
     })()
   </script>
-  <!-- <button onclick="reloadStream()">change source</button> -->
-  <!-- <button onclick="newSession()">new session</button> -->
+  <!-- <button onclick="updateEstatTag()">Update eStat tag levels</button> -->
 </body>

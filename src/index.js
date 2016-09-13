@@ -1,42 +1,49 @@
 // Clappr player is Copyright 2014 Globo.com Player authors. All rights reserved.
 // eStat’Streaming is Copyright 2012 Médiamétrie-eStat. All rights reserved.
 
-import {CorePlugin, Events, $} from 'clappr'
-import isEqual from 'lodash.isequal'
+import {CorePlugin, Events, Playback, version, $} from 'clappr'
+import eStatLoader from './estat-loader'
 
 export default class EstatPlugin extends CorePlugin {
-  get name() { return 'estat_streaming_ds' }
+  get name() { return 'estat_streaming_mu' }
 
   constructor(core) {
     super(core)
 
+    // Plugin configuration is required
     if (!this.options.estatPlugin) {
       throw new Error(this.name + ' plugin configuration is missing')
     }
 
-    // eStat streaming serial is required
-    this._serial = this.options.estatPlugin.serial
-    if (!this._serial) {
-      throw new Error(this.name + ' plugin "serial" configuration property is missing')
+    // eStat streaming tag configuration is required
+    this._esTagCfg = this.options.estatPlugin.eStatTagCfg
+    if (!this._esTagCfg) {
+      throw new Error(this.name + ' plugin : "eStatTagCfg" configuration property is missing')
     }
 
-    // eStat session parameter object is required
-    if (!this.options.estatPlugin.session) {
-      throw new Error(this.name + ' plugin "session" configuration property is missing')
+    // Minimal requirements are serial and stream name
+    if(!this._esTagCfg.serial) {
+      throw new Error(this.name + ' plugin : eStat serial is missing in configuration')
     }
-    this.setSession(this.options.estatPlugin.session)
-
-    // eStat streaming ready callback is optional
-    this._readyCb = this.options.estatPlugin.readyCallback
-    if (this._readyCb && typeof this._readyCb !== 'function') {
-      throw new Error(this.name + ' plugin "readyCallback" configuration property is not a function')
+    if(!this._esTagCfg.streaming || !this._esTagCfg.streaming.streamName) {
+      throw new Error(this.name + ' plugin : eStat stream name is missing in configuration')
     }
 
-    // sendPlayOnce parameter is optional
-    this._playOnce = this.options.estatPlugin.sendPlayOnce === true
-    this._doSendPlay = true
+    this._esEvents = {}
+    this._esDebug = this.options.estatPlugin.debug === true
+    this._esSecure = this.options.estatPlugin.secure === true
 
-    this.eStatSetup()
+    // Load eStat library
+    this._esLoaded = false
+    eStatLoader(
+      () => {
+        this._esLoaded = true
+        this.eStatCreateTag()
+      },
+      '5.2',
+      this._esDebug,
+      this._esSecure
+    )
   }
 
   bindEvents() {
@@ -48,12 +55,16 @@ export default class EstatPlugin extends CorePlugin {
       this.listenTo(this._container, Events.CONTAINER_STOP, this.onStop)
       this.listenTo(this._container, Events.CONTAINER_PAUSE, this.onPause)
       this.listenTo(this._container, Events.CONTAINER_SEEK, this.onSeek)
+      this.listenTo(this._container, Events.CONTAINER_STATE_BUFFERING, this.onBuffering)
+      this.listenTo(this._container, Events.CONTAINER_STATE_BUFFERFULL, this.onBufferfull)
+      this.listenTo(this._container, Events.CONTAINER_ENDED, this.onEnded)
+      this.eStatCreateTag()
     }
   }
 
   getExternalInterface() {
     return {
-      estatNewSession: this.eStatNewSession
+      eStatStreamTag: this.eStatTag
     }
   }
 
@@ -64,131 +75,113 @@ export default class EstatPlugin extends CorePlugin {
 
   get playerElement() {
     // Container DOM element is used for player element
-    // eStat library will attach an 'Obj' property on session creation
     return this._container && this._container.el
   }
 
-  get satisfyVersion() {
-    // Assume is compatible with version 4.*.* (Tested with version 4.0.36)
-    return this.eStatVersion.indexOf('4.') === 0
-  }
+  eStatTagDefaultConfig() {
+    // container must be available
+    if (!this._container) return {}
 
-  get satisfyRequirements() {
-    return window.estat_Object && window.eStat_ms && window.DS
-  }
-
-  get eStatVersion() {
-    return window.eStat_version || 'unknown'
-  }
-
-  setSession(session) {
-    // Copy object to avoid modifications by reference
-    let newSession = Object.assign({}, session)
-
-    // Ensure session object has expected properties
-    $.each(['videoName', 'level1', 'level2', 'level3', 'level4', 'level5', 'genre'], (index, item) => {
-      if (!(item in newSession)) {
-        throw new Error(this.name + ' plugin "session" configuration property is invalid')
+    return {
+      measure: 'streaming',
+      streaming: {
+        diffusion: 'replay', // Arbitrary set to 'replay', resolved at playback time
+        callbackPosition: () => { return this.trunc(this.playerPosition) },
+        playerName: 'Clappr',
+        playerVersion: version,
+        playerObj: this.playerElement,
       }
-    })
-
-    this._session = newSession
-  }
-
-  eStatSetup() {
-    if (!window.estat_Object) {
-      // Load eStat library with manual "DS" tracker
-      window._PJS = 0
-      window._cmsJS = 0
-      window._eStatDS = 1
-      window.eStat_PJS = () => { this.eStatLoaded() }
-      window.eStat_CMSJS = () => { this.eStatMsLoaded() }
-
-      // The following script will set _PJS to 1 and call eStat_PJS()
-      // Given _cmsJS is defined, the following script will load ms library, set _cmsJS to 1 and call eStat_CMSJS()
-      // Given _eStatDS is defined, the ms library will load DS player library
-      const script = document.createElement('script')
-      script.setAttribute('type', 'text/javascript')
-      script.setAttribute('async', 'async')
-      script.setAttribute('src', '//prof.estat.com/js/' + this._serial + '.js')
-      document.body.appendChild(script)
-    } else {
-      // Assume eStat library is already loaded with manual "DS" tracker and authentification done
-      if (!this.satisfyRequirements) {
-        throw new Error(this.name + 'plugin require eStat library loaded with _cmsJS and _eStatDS defined. Please refer to eStat manual')
-      }
-      this.eStatMsLoaded()
     }
   }
 
-  eStatLoaded() {
-    if (!this.satisfyVersion) {
-      console.log(this.name + ' plugin may be incompatible with eStat version ' + window.eStat_version)
+  eStatCreateTag(recreate) {
+    // Library must be loaded and container must be available
+    if (!this._esLoaded || !this._container) return
+
+    // Ensure tag is not already created
+    if (this._esTag && !recreate) return
+
+    // Check for overridable streaming properties
+    this._esTagCfgHasDuration = this._esTagCfg.streaming.streamDuration ? true : false
+    this._esTagCfgHasDiffusion = this._esTagCfg.streaming.diffusion ? true : false
+
+    // Check if configuration is already satisfied
+    this._esTagCfgSatisfied = this._esTagCfgHasDuration && this._esTagCfgHasDiffusion
+
+    // Store eStat streaming diffusion (if provided)
+    if (this._esTagCfgHasDiffusion) {
+      this._esDiffusion = this._esTagCfg.streaming.diffusion
     }
-    this.eStatAuth()
+
+    // Build tag configuration
+    let tagCfg = {}
+    $.extend(true, tagCfg, this.eStatTagDefaultConfig(), this._esTagCfg)
+
+    // Create eStat stream tag instance (Also trigger authentication request)
+    this._esTag = new window.eStatTag(tagCfg)
   }
 
-  eStatMsLoaded() {
-    this.eStatSession()
-    this.eStatReady()
+  eStatSatisfyTagCfg() {
+    let cfg = {streaming: {}}
+
+    // Resolve eStat streaming diffusion according playback type
+    if (!this._esTagCfgHasDiffusion) {
+      if (this.isLive) {
+        cfg.streaming.diffusion = this._container.isDvrEnabled() ? 'timeshifting' : 'live'
+      } else {
+        cfg.streaming.diffusion = 'replay'
+      }
+      this._esDiffusion = cfg.streaming.diffusion
+    }
+
+    // Set stream duration (only if available)
+    if (!this._esTagCfgHasDuration && !this.isLive) {
+      cfg.streaming.streamDuration = this.trunc(this.playerDuration)
+    }
+
+    // Satisfy eStat tag configuration
+    this._esTag && this._esTag.set(cfg)
+    this._esTagCfgSatisfied = true
   }
 
-  eStatReady() {
-    if (this._readyCb) process.nextTick(() => this._readyCb())
+  esTagNotify(eventName, pos) {
+    this._esTag && this._esTag.notifyPlayer(eventName, pos)
   }
 
-  eStatAuth() {
-    // The following method setup cmsVI, eS_host and eS_access values
-    window.eStat_id && window.eStat_id.serial(this._serial)
+  eStatTag() {
+    return this._esTag
   }
 
-  eStatNewSession(session) {
-    // Apply only if tracking parameters differs
-    if (isEqual(this._session, session)) return
-
-    // Get current play state
-    let playState = this.isPlaying
-
-    // Setup new eStat player session
-    // Note: stop current session and start new only if player is playing
-    this.setSession(session)
-    if (playState) this.onStop()
-    window.eStat_ms && window.eStat_ms.newStreamUI(
-      this.playerElement,
-      this._session.videoName,
-      this._session.level1,
-      this._session.level2,
-      this._session.level3,
-      this._session.level4,
-      this._session.level5,
-      this._session.genre,
-    )
-    if (playState) this.onPlay()
-  }
-
-  eStatSession() {
-    // Setup eStat player session
-    window.eStat_ms && window.eStat_ms.referenceUI(
-      this.playerElement,
-      'DS',
-      this._session.videoName,
-      this._session.level1,
-      this._session.level2,
-      this._session.level3,
-      this._session.level4,
-      this._session.level5,
-      this._session.genre,
-      '',
-      () => { return this.playerPosition }
-    )
+  trunc(n) {
+    return parseInt(n, 10)
   }
 
   get playerPosition() {
-    return this._container.getPlaybackType() === 'live' ? 0 : this._position
+    return this.isLive ? 0 : this._position
   }
 
-  get isPlaying() {
-    return this._container.isPlaying()
+  get playerDuration() {
+    return this.isLive ? 0 : this._container && this._container.getDuration()
+  }
+
+  get isLive() {
+    return this._container.getPlaybackType() === Playback.LIVE
+  }
+
+  get isTimeshift() {
+    return this._container.isDvrEnabled() && this._container.isDvrInUse()
+  }
+
+  recallEvent(name, pos) {
+    this._esEvents[name] = pos
+  }
+
+  forgetEvent(name) {
+    delete this._esEvents[name]
+  }
+
+  posEvent(name) {
+    return this._esEvents.hasOwnProperty(name) ? this._esEvents[name] : -1
   }
 
   onTimeUpdate(o){
@@ -196,24 +189,73 @@ export default class EstatPlugin extends CorePlugin {
   }
 
   onPlay() {
-    if (this._playOnce) {
-      if (!this._doSendPlay) return
-      this._doSendPlay = false
+    this.recallEvent('play', this.trunc(this.playerPosition))
+
+    // Some tag configuration properties are only available during playback
+    if (!this._esTagCfgSatisfied) this.eStatSatisfyTagCfg()
+
+    // Check if SEEK player event previously occurred
+    let pos = this.posEvent('seek')
+    if (pos > -1) {
+      // isTimeshift is "true" if playing time shifted content and "false" if back playing live content
+      if (this._esDiffusion === 'timeshifting' && !this.isTimeshift) {
+        // Back to live content
+        this.esTagNotify('stop', pos)
+      } else {
+        // Replay or time shifted content
+        this.esTagNotify('pause', pos)
+      }
+      this.forgetEvent('seek')
     }
-    window.eStat_ms && window.eStat_ms.TagDS(this.playerElement).sendEvent(window.eStatPlayState.Play)
+
+    // Player may buffer during playback WITH or WITHOUT "freeze" video display content.
+    // FIXME: notify tag with 'pause' event if BUFFERFULL player event occured ?
+    // But this fix may significantly increase sessions ? (if live content)
+
+    this.esTagNotify('play')
   }
 
   onStop() {
-    window.eStat_ms && window.eStat_ms.TagDS(this.playerElement).sendEvent(window.eStatPlayState.Stop)
-    if (this._playOnce) this._doSendPlay = true
+    this.esTagNotify('stop')
   }
 
   onPause() {
-    window.eStat_ms && window.eStat_ms.TagDS(this.playerElement).sendEvent(window.eStatPlayState.Pause)
-    if (this._playOnce) this._doSendPlay = true
+    this.esTagNotify('pause')
   }
 
-  onSeek() {
-    if (this._playOnce) this._doSendPlay = true
+  onSeek(o) {
+    /**
+     * SEEK operation must be notified to eStat tag like the following :
+     *
+     *   'pause', then 'play' if diffusion is 'replay'.
+     *   'pause', then 'play' if diffusion is 'timeshiftin' and SEEK is completed on recorded part.
+     *   'stop', then 'play' if diffusion is 'timeshiftin' and SEEK if for go back to live.
+     *
+     * Clappr container trigger PLAY event after SEEK operation.
+     */
+    this.recallEvent('seek', this.trunc(this.playerPosition))
+  }
+
+  onBuffering() {
+    // Recall BUFFERING player event only if PLAY player event occurred
+    let pos = this.posEvent('play')
+    if (pos > -1) {
+      this.forgetEvent('play')
+      this.recallEvent('buffering', this.trunc(this.playerPosition))
+    }
+  }
+
+  onBufferfull() {
+    // Recall BUFFERFULL player event only if BUFFERING player event occurred
+    let pos = this.posEvent('buffering')
+    if (pos > -1) {
+      this.forgetEvent('buffering')
+      this.recallEvent('bufferfull', pos)
+    }
+  }
+
+  onEnded() {
+    // Notify 'stop' to eStat tag if video ended (eStat compliance)
+    this.esTagNotify('stop')
   }
 }

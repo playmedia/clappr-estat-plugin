@@ -2,9 +2,7 @@
 
 [Mediametrie eStat streaming](http://www.mediametrie-estat.com/estatstreaming/) plugin for [Clappr](https://github.com/clappr/clappr) video player.
 
-This plugin use the eStat streaming "DS" manual tracker. The "DS" tracker is compatible with any player playback type.
-
-__Experimental :__ This plugin may work only with eStat streaming library version `4.0.36` or compatible. (It is a fairly old version!)
+This plugin use the eStat Javascript streaming tag library.
 
 # Usage
 
@@ -26,43 +24,98 @@ var player = new Clappr.Player({
     core: [ClapprEstatPlugin],
   },
   estatPlugin: {
-    serial: 'ESTAT-STREAMING-SERIAL',
-    session: {
-      videoName: 'Video name',
-      level1: 'Level 1 value',
-      level2: 'Level 2 value',
-      level3: 'Level 3 value',
-      level4: 'Level 4 value',
-      level5: 'Level 5 value',
-      genre: 'Video genre',
+    eStatTagCfg: {
+      serial: 'ESTAT-STREAMING-SERIAL',
+      streaming: {
+        streamName: 'MyVideoTitle',
+        streamGenre: 'MyVideoGenre',
+      },
     },
   }
 });
 ```
 
-`serial` property must be the eStat serial provided by Mediametrie.
+## eStatTagCfg
 
-`session` property must be a plain Object with eStat player session properties. For more details, read eStat streaming manual provided by Mediametrie.
+`eStatTagCfg` __required__ property is the __eStatTag__ configuration object. For more details, read eStat streaming manual provided by Mediametrie.
 
-`readyCallback` property is an optional callback function called when eStat library is ready.
-
-`sendPlayOnce` property is an optional boolean which indicate if "play" events triggered as the result of "buffer full" during playback are __not__ send to eStat. Default value is `false`. (all "play" events are send).
-
-This plugin also add `estatNewSession` method to Clappr player instance. This optional method may be used for live stream to create a new session when program change or for load another video source without destroying player or changing options.
+Default plugin behaviour is to automatically update the following __eStatTag__ configuration properties with these values :
 
 ```javascript
-player.estatNewSession({
-  videoName: 'Another video name',
-  level1: 'Level 1 value',
-  level2: 'Level 2 value',
-  level3: 'Level 3 value',
-  level4: 'Level 4 value',
-  level5: 'Level 5 value',
-  genre: 'Another video genre',
-})
+  /* eStatTag automatically updated properties */
+  {
+    measure: '*',            // value is set to 'streaming'
+    streaming: {
+      diffusion: '*',        // value is set according player playback type ('live', 'replay' or 'timeshifting')
+      callbackPosition: '*', // value is the internal player position callback function
+      playerName: '*',       // value is set to 'Clappr'
+      playerVersion: '*',    // value is set to Clappr player version
+      playerObject: '*',     // value is set to player container element
+      streamDuration: '*',   // value is set to video duration (if available, otherwise is not set)
+    }
+  }
 ```
 
-Keep in mind that using this method for live stream will increase significantly session count.
+The above configuration properties are not required, but can be overridden in `eStatTagCfg` plugin option.
+
+Therefore, the minimal required plugin configuration is :
+
+```javascript
+  /* [...] */
+  estatPlugin: {
+    eStatTagCfg: {
+      serial: 'ESTAT-STREAMING-SERIAL',
+      streaming: {
+        streamName: 'MyVideoTitle',
+      },
+    },
+  }
+  /* [...] */
+```
+
+## debug
+
+`debug` __optional__ property is a boolean which indicate if the developement version of the eStat library is loaded. Default value is `false`.
+
+This version use browser console to display informations. _(alert if eStatTag is not properly configured, and more...)_
+
+This property is only for development purposes. Do not set to `true` in production.
+
+## secure
+
+`secure` __optional__ property is a boolean which force the eStat library to be loaded using HTTPS protocol. Default value is `false`. _(default behaviour is to match current document protocol)_
+
+# External Interface
+
+The `eStatStreamTag()` method is added to Clappr player instance. This method return the __eStatTag__ instance object associated to player.
+
+```javascript
+var player = new Clappr.Player({
+  source: "http://your.video/here.mp4",
+  plugins: {
+    core: [ClapprEstatPlugin],
+  },
+  estatPlugin: {
+    eStatTagCfg: {
+      serial: 'ESTAT-STREAMING-SERIAL',
+      streaming: {
+        streamName: 'MyVideoTitle',
+      },
+    },
+  }
+});
+
+var tag = player.eStatStreamTag();
+
+tag.set({
+  levels: {
+    level_1: 'foo',
+    level_2: 'bar',
+  }
+});
+```
+
+For more details about __eStatTag__ object, read eStat streaming manual provided by Mediametrie.
 
 # Development
 
