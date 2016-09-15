@@ -1,5 +1,7 @@
 # Clappr eStat streaming Plugin
 
+__DEPRECATED:__ This plugin branch version does not follow eStat implementation guidelines. Use latest version of the plugin.
+
 [Mediametrie eStat streaming](http://www.mediametrie-estat.com/estatstreaming/) plugin for [Clappr](https://github.com/clappr/clappr) video player.
 
 This plugin use the eStat streaming "DS" manual tracker version `4.x`. The "DS" tracker is compatible with any player playback type.

@@ -143,6 +143,8 @@ export default class EstatPlugin extends CorePlugin {
   }
 
   eStatNewSession(session) {
+    // FIXME: new session should be created event if tracker parameters are same (ex: live stream)
+
     // Apply only if tracking parameters differs
     if (isEqual(this._session, session)) return
 
@@ -210,10 +212,12 @@ export default class EstatPlugin extends CorePlugin {
 
   onPause() {
     window.eStat_ms && window.eStat_ms.TagDS(this.playerElement).sendEvent(window.eStatPlayState.Pause)
+    // FIXME: For live stream, new session must be created after pause
     if (this._playOnce) this._doSendPlay = true
   }
 
   onSeek() {
+    // FIXME: pause event must be send if user seek video (eStat compliance)
     if (this._playOnce) this._doSendPlay = true
   }
 }
