@@ -21,7 +21,6 @@
     "clean-webpack-plugin": "0.1.10",
     "david": "9.0.0",
     "http-cli": "1.1.0",
-    "lodash.isequal": "4.4.0",
     "webpack": "1.13.2"
   }
 }
