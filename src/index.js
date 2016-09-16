@@ -172,6 +172,10 @@ export default class EstatPlugin extends CorePlugin {
     return this._container.isDvrEnabled() && this._container.isDvrInUse()
   }
 
+  get isEnd() {
+    return this.trunc(this.playerDuration) === this.trunc(this.playerPosition)
+  }
+
   recallEvent(name, pos) {
     this._esEvents[name] = pos
   }
@@ -220,6 +224,11 @@ export default class EstatPlugin extends CorePlugin {
   }
 
   onPause() {
+    // PAUSE player event is triggered when end of VOD content is reached.
+    // In this case, eStat tag expect to be notified with 'stop' (not 'pause').
+    // Therefore, PAUSE player event is ignored and 'stop' is notified in ENDED player event
+    if (!this.isLive && this.isEnd) return
+
     this.esTagNotify('pause')
   }
 
