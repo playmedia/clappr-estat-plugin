@@ -168,6 +168,10 @@ export default class EstatPlugin extends CorePlugin {
     return this._container.getPlaybackType() === Playback.LIVE
   }
 
+  get isLiveHtml5() {
+    return this.isLive && this._container.playback.name === 'html5_video'
+  }
+
   get isTimeshift() {
     return this._container.isDvrEnabled() && this._container.isDvrInUse()
   }
@@ -228,6 +232,11 @@ export default class EstatPlugin extends CorePlugin {
     // In this case, eStat tag expect to be notified with 'stop' (not 'pause').
     // Therefore, PAUSE player event is ignored and 'stop' is notified in ENDED player event
     if (!this.isLive && this.isEnd) return
+
+    // Safari + iOS workaround :
+    // PAUSE player event is trigerred when "native" HTML5 video LIVE content is stopped.
+    // In this case, eStat tag does not expect to be notified with 'pause' after 'stop'.
+    if (this.isLiveHtml5) return
 
     this.esTagNotify('pause')
   }
