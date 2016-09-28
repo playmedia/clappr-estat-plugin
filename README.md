@@ -4,6 +4,8 @@
 
 This plugin use the eStat Javascript streaming tag library.
 
+KNOWN ISSUES: player events are not properly tracked on iOS with Safari if using "native" media controls. (VOD and Live with DVR)
+
 # Usage
 
 Add both Clappr and the plugin scripts to your HTML:
