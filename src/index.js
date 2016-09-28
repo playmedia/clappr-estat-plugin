@@ -224,6 +224,7 @@ export default class EstatPlugin extends CorePlugin {
   }
 
   onStop() {
+    this.recallEvent('stop', this.trunc(this.playerPosition))
     this.esTagNotify('stop')
   }
 
@@ -236,7 +237,11 @@ export default class EstatPlugin extends CorePlugin {
     // Safari + iOS workaround :
     // PAUSE player event is trigerred when "native" HTML5 video LIVE content is stopped.
     // In this case, eStat tag does not expect to be notified with 'pause' after 'stop'.
-    if (this.isLiveHtml5) return
+    if (this.posEvent('stop') > -1 && this.isLiveHtml5) {
+      this.forgetEvent('stop')
+
+      return
+    }
 
     this.esTagNotify('pause')
   }
@@ -256,8 +261,7 @@ export default class EstatPlugin extends CorePlugin {
 
   onBuffering() {
     // Recall BUFFERING player event only if PLAY player event occurred
-    let pos = this.posEvent('play')
-    if (pos > -1) {
+    if (this.posEvent('play') > -1) {
       this.forgetEvent('play')
       this.recallEvent('buffering', this.trunc(this.playerPosition))
     }
