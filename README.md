@@ -127,13 +127,7 @@ Install dependencies :
   npm install
 ```
 
-Dev. build :
-
-```shell
-  npm run dev
-```
-
-Dist build :
+Compile :
 
 ```shell
   npm run dist
