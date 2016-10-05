@@ -1,1 +1,451 @@
-!function(t,e){"object"==typeof exports&&"object"==typeof module?module.exports=e(require("clappr")):"function"==typeof define&&define.amd?define(["clappr"],e):"object"==typeof exports?exports.ClapprEstatPlugin=e(require("clappr")):t.ClapprEstatPlugin=e(t.Clappr)}(this,function(t){return function(t){function e(n){if(i[n])return i[n].exports;var s=i[n]={exports:{},id:n,loaded:!1};return t[n].call(s.exports,s,s.exports,e),s.loaded=!0,s.exports}var i={};return e.m=t,e.c=i,e.p="",e(0)}([function(t,e,i){"use strict";function n(t){return t&&t.__esModule?t:{"default":t}}function s(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function a(t,e){if(!t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e}function o(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)}Object.defineProperty(e,"__esModule",{value:!0});var r=function(){function t(t,e){for(var i=0;i<e.length;i++){var n=e[i];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(t,n.key,n)}}return function(e,i,n){return i&&t(e.prototype,i),n&&t(e,n),e}}(),u=i(2),f=i(1),l=n(f),g=function(t){function e(t){s(this,e);var i=a(this,(e.__proto__||Object.getPrototypeOf(e)).call(this,t));if(!i.options.estatPlugin)throw new Error(i.name+" plugin configuration is missing");if(i._esTagCfg=i.options.estatPlugin.eStatTagCfg,!i._esTagCfg)throw new Error(i.name+' plugin : "eStatTagCfg" configuration property is missing');if(!i._esTagCfg.serial)throw new Error(i.name+" plugin : eStat serial is missing in configuration");if(!i._esTagCfg.streaming||!i._esTagCfg.streaming.streamName)throw new Error(i.name+" plugin : eStat stream name is missing in configuration");return i._esEvents={},i._esDebug=i.options.estatPlugin.debug===!0,i._esSecure=i.options.estatPlugin.secure===!0,i._esLoaded=!1,(0,l["default"])(function(){i._esLoaded=!0,i.eStatCreateTag()},"5.2",i._esDebug,i._esSecure),i}return o(e,t),r(e,[{key:"name",get:function(){return"estat_streaming_mu"}}]),r(e,[{key:"bindEvents",value:function(){this.listenTo(this.core.mediaControl,u.Events.MEDIACONTROL_CONTAINERCHANGED,this.containerChanged),this._container=this.core.getCurrentContainer(),this._container&&(this.listenTo(this._container,u.Events.CONTAINER_TIMEUPDATE,this.onTimeUpdate),this.listenTo(this._container,u.Events.CONTAINER_PLAY,this.onPlay),this.listenTo(this._container,u.Events.CONTAINER_STOP,this.onStop),this.listenTo(this._container,u.Events.CONTAINER_PAUSE,this.onPause),this.listenTo(this._container,u.Events.CONTAINER_SEEK,this.onSeek),this.listenTo(this._container,u.Events.CONTAINER_STATE_BUFFERING,this.onBuffering),this.listenTo(this._container,u.Events.CONTAINER_STATE_BUFFERFULL,this.onBufferfull),this.listenTo(this._container,u.Events.CONTAINER_ENDED,this.onEnded),this.eStatCreateTag())}},{key:"getExternalInterface",value:function(){return{eStatStreamTag:this.eStatTag}}},{key:"containerChanged",value:function(){this.stopListening(),this.bindEvents()}},{key:"eStatTagDefaultConfig",value:function(){var t=this;return this._container?{measure:"streaming",streaming:{diffusion:"replay",callbackPosition:function(){return t.trunc(t.playerPosition)},playerName:"Clappr",playerVersion:u.version,playerObj:this.playerElement}}:{}}},{key:"eStatCreateTag",value:function(t){if(this._esLoaded&&this._container&&(!this._esTag||t)){this._esTagCfgHasDuration=!!this._esTagCfg.streaming.streamDuration,this._esTagCfgHasDiffusion=!!this._esTagCfg.streaming.diffusion,this._esTagCfgSatisfied=this._esTagCfgHasDuration&&this._esTagCfgHasDiffusion,this._esTagCfgHasDiffusion&&(this._esDiffusion=this._esTagCfg.streaming.diffusion);var e={};u.$.extend(!0,e,this.eStatTagDefaultConfig(),this._esTagCfg),this._esTag=new window.eStatTag(e)}}},{key:"eStatSatisfyTagCfg",value:function(){var t={streaming:{}};this._esTagCfgHasDiffusion||(this.isLive?t.streaming.diffusion=this._container.isDvrEnabled()?"timeshifting":"live":t.streaming.diffusion="replay",this._esDiffusion=t.streaming.diffusion),this._esTagCfgHasDuration||this.isLive||(t.streaming.streamDuration=this.trunc(this.playerDuration)),this._esTag&&this._esTag.set(t),this._esTagCfgSatisfied=!0}},{key:"esTagNotify",value:function(t,e){this._esTag&&this._esTag.notifyPlayer(t,e)}},{key:"eStatTag",value:function(){return this._esTag}},{key:"trunc",value:function(t){return parseInt(t,10)}},{key:"recallEvent",value:function(t,e){this._esEvents[t]=e}},{key:"forgetEvent",value:function(t){delete this._esEvents[t]}},{key:"posEvent",value:function(t){return this._esEvents.hasOwnProperty(t)?this._esEvents[t]:-1}},{key:"onTimeUpdate",value:function(t){this._position=t.current||0}},{key:"onPlay",value:function(){this.recallEvent("play",this.trunc(this.playerPosition)),this._esTagCfgSatisfied||this.eStatSatisfyTagCfg();var t=this.posEvent("seek");t>-1&&("timeshifting"!==this._esDiffusion||this.isTimeshift?this.esTagNotify("pause",t):this.esTagNotify("stop",t),this.forgetEvent("seek")),this.esTagNotify("play")}},{key:"onStop",value:function(){this.esTagNotify("stop")}},{key:"onPause",value:function(){!this.isLive&&this.isEnd||this.esTagNotify("pause")}},{key:"onSeek",value:function(t){this.recallEvent("seek",this.trunc(this.playerPosition))}},{key:"onBuffering",value:function(){var t=this.posEvent("play");t>-1&&(this.forgetEvent("play"),this.recallEvent("buffering",this.trunc(this.playerPosition)))}},{key:"onBufferfull",value:function(){var t=this.posEvent("buffering");t>-1&&(this.forgetEvent("buffering"),this.recallEvent("bufferfull",t))}},{key:"onEnded",value:function(){this.esTagNotify("stop")}},{key:"playerElement",get:function(){return this._container&&this._container.el}},{key:"playerPosition",get:function(){return this.isLive?0:this._position}},{key:"playerDuration",get:function(){return this.isLive?0:this._container&&this._container.getDuration()}},{key:"isLive",get:function(){return this._container.getPlaybackType()===u.Playback.LIVE}},{key:"isTimeshift",get:function(){return this._container.isDvrEnabled()&&this._container.isDvrInUse()}},{key:"isEnd",get:function(){return this.trunc(this.playerDuration)===this.trunc(this.playerPosition)}}]),e}(u.CorePlugin);e["default"]=g,t.exports=e["default"]},function(t,e){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e["default"]=function(t){var e=arguments.length<=1||void 0===arguments[1]?"5.2":arguments[1],i=arguments[2],n=arguments[3],s=window,a=document,o="script";if(!s.eStatTag){var r=n===!0?"https:":"",u=i===!0?"integration-":"",f=a.getElementsByTagName(o)[0],l=a.createElement(o);l.src=r+"//prof.estat.com/js/mu-"+u+e+".js",l.async=!0,"function"==typeof t&&(l.onload=t),f.parentNode.insertBefore(l,f)}},t.exports=e["default"]},function(e,i){e.exports=t}])});
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory(require("clappr"));
+	else if(typeof define === 'function' && define.amd)
+		define(["clappr"], factory);
+	else if(typeof exports === 'object')
+		exports["ClapprEstatPlugin"] = factory(require("clappr"));
+	else
+		root["ClapprEstatPlugin"] = factory(root["Clappr"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _clappr = __webpack_require__(1);
+
+	var _estatLoader = __webpack_require__(2);
+
+	var _estatLoader2 = _interopRequireDefault(_estatLoader);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // Clappr player is Copyright 2014 Globo.com Player authors. All rights reserved.
+	// eStat’Streaming is Copyright 2012 Médiamétrie-eStat. All rights reserved.
+
+	var EstatPlugin = function (_CorePlugin) {
+	  _inherits(EstatPlugin, _CorePlugin);
+
+	  _createClass(EstatPlugin, [{
+	    key: 'name',
+	    get: function get() {
+	      return 'estat_streaming_mu';
+	    }
+	  }]);
+
+	  function EstatPlugin(core) {
+	    _classCallCheck(this, EstatPlugin);
+
+	    // Plugin configuration is required
+	    var _this = _possibleConstructorReturn(this, (EstatPlugin.__proto__ || Object.getPrototypeOf(EstatPlugin)).call(this, core));
+
+	    if (!_this.options.estatPlugin) {
+	      throw new Error(_this.name + ' plugin configuration is missing');
+	    }
+
+	    // eStat streaming tag configuration is required
+	    _this._esTagCfg = _this.options.estatPlugin.eStatTagCfg;
+	    if (!_this._esTagCfg) {
+	      throw new Error(_this.name + ' plugin : "eStatTagCfg" configuration property is missing');
+	    }
+
+	    // Minimal requirements are serial and stream name
+	    if (!_this._esTagCfg.serial) {
+	      throw new Error(_this.name + ' plugin : eStat serial is missing in configuration');
+	    }
+	    if (!_this._esTagCfg.streaming || !_this._esTagCfg.streaming.streamName) {
+	      throw new Error(_this.name + ' plugin : eStat stream name is missing in configuration');
+	    }
+
+	    _this._esEvents = {};
+	    _this._esDebug = _this.options.estatPlugin.debug === true;
+	    _this._esSecure = _this.options.estatPlugin.secure === true;
+
+	    // Load eStat library
+	    _this._esLoaded = false;
+	    (0, _estatLoader2.default)(function () {
+	      _this._esLoaded = true;
+	      _this.eStatCreateTag();
+	    }, '5.2', _this._esDebug, _this._esSecure);
+	    return _this;
+	  }
+
+	  _createClass(EstatPlugin, [{
+	    key: 'bindEvents',
+	    value: function bindEvents() {
+	      this.listenTo(this.core.mediaControl, _clappr.Events.MEDIACONTROL_CONTAINERCHANGED, this.containerChanged);
+	      this._container = this.core.getCurrentContainer();
+	      if (this._container) {
+	        this.listenTo(this._container, _clappr.Events.CONTAINER_TIMEUPDATE, this.onTimeUpdate);
+	        this.listenTo(this._container, _clappr.Events.CONTAINER_PLAY, this.onPlay);
+	        this.listenTo(this._container, _clappr.Events.CONTAINER_STOP, this.onStop);
+	        this.listenTo(this._container, _clappr.Events.CONTAINER_PAUSE, this.onPause);
+	        this.listenTo(this._container, _clappr.Events.CONTAINER_SEEK, this.onSeek);
+	        this.listenTo(this._container, _clappr.Events.CONTAINER_STATE_BUFFERING, this.onBuffering);
+	        this.listenTo(this._container, _clappr.Events.CONTAINER_STATE_BUFFERFULL, this.onBufferfull);
+	        this.listenTo(this._container, _clappr.Events.CONTAINER_ENDED, this.onEnded);
+	        this.eStatCreateTag();
+	      }
+	    }
+	  }, {
+	    key: 'getExternalInterface',
+	    value: function getExternalInterface() {
+	      return {
+	        eStatStreamTag: this.eStatTag
+	      };
+	    }
+	  }, {
+	    key: 'containerChanged',
+	    value: function containerChanged() {
+	      this.stopListening();
+	      this.bindEvents();
+	    }
+	  }, {
+	    key: 'eStatTagDefaultConfig',
+	    value: function eStatTagDefaultConfig() {
+	      var _this2 = this;
+
+	      // container must be available
+	      if (!this._container) return {};
+
+	      return {
+	        measure: 'streaming',
+	        streaming: {
+	          diffusion: 'replay', // Arbitrary set to 'replay', resolved at playback time
+	          callbackPosition: function callbackPosition() {
+	            return _this2.trunc(_this2.playerPosition);
+	          },
+	          playerName: 'Clappr',
+	          playerVersion: _clappr.version,
+	          playerObj: this.playerElement
+	        }
+	      };
+	    }
+	  }, {
+	    key: 'eStatCreateTag',
+	    value: function eStatCreateTag(recreate) {
+	      // Library must be loaded and container must be available
+	      if (!this._esLoaded || !this._container) return;
+
+	      // Ensure tag is not already created
+	      if (this._esTag && !recreate) return;
+
+	      // Check for overridable streaming properties
+	      this._esTagCfgHasDuration = this._esTagCfg.streaming.streamDuration ? true : false;
+	      this._esTagCfgHasDiffusion = this._esTagCfg.streaming.diffusion ? true : false;
+
+	      // Check if configuration is already satisfied
+	      this._esTagCfgSatisfied = this._esTagCfgHasDuration && this._esTagCfgHasDiffusion;
+
+	      // Store eStat streaming diffusion (if provided)
+	      if (this._esTagCfgHasDiffusion) {
+	        this._esDiffusion = this._esTagCfg.streaming.diffusion;
+	      }
+
+	      // Build tag configuration
+	      var tagCfg = {};
+	      _clappr.$.extend(true, tagCfg, this.eStatTagDefaultConfig(), this._esTagCfg);
+
+	      // Create eStat stream tag instance (Also trigger authentication request)
+	      this._esTag = new window.eStatTag(tagCfg);
+	    }
+	  }, {
+	    key: 'eStatSatisfyTagCfg',
+	    value: function eStatSatisfyTagCfg() {
+	      var cfg = { streaming: {} };
+
+	      // Resolve eStat streaming diffusion according playback type
+	      if (!this._esTagCfgHasDiffusion) {
+	        if (this.isLive) {
+	          cfg.streaming.diffusion = this._container.isDvrEnabled() ? 'timeshifting' : 'live';
+	        } else {
+	          cfg.streaming.diffusion = 'replay';
+	        }
+	        this._esDiffusion = cfg.streaming.diffusion;
+	      }
+
+	      // Set stream duration (only if available)
+	      if (!this._esTagCfgHasDuration && !this.isLive) {
+	        cfg.streaming.streamDuration = this.trunc(this.playerDuration);
+	      }
+
+	      // Satisfy eStat tag configuration
+	      this._esTag && this._esTag.set(cfg);
+	      this._esTagCfgSatisfied = true;
+	    }
+	  }, {
+	    key: 'esTagNotify',
+	    value: function esTagNotify(eventName, pos) {
+	      this._esTag && this._esTag.notifyPlayer(eventName, pos);
+	    }
+	  }, {
+	    key: 'eStatTag',
+	    value: function eStatTag() {
+	      return this._esTag;
+	    }
+	  }, {
+	    key: 'trunc',
+	    value: function trunc(n) {
+	      return parseInt(n, 10);
+	    }
+	  }, {
+	    key: 'recallEvent',
+	    value: function recallEvent(name, pos) {
+	      this._esEvents[name] = pos;
+	    }
+	  }, {
+	    key: 'forgetEvent',
+	    value: function forgetEvent(name) {
+	      delete this._esEvents[name];
+	    }
+	  }, {
+	    key: 'posEvent',
+	    value: function posEvent(name) {
+	      return this._esEvents.hasOwnProperty(name) ? this._esEvents[name] : -1;
+	    }
+	  }, {
+	    key: 'onTimeUpdate',
+	    value: function onTimeUpdate(o) {
+	      this._position = o.current || 0;
+	    }
+	  }, {
+	    key: 'onPlay',
+	    value: function onPlay() {
+	      this.recallEvent('play', this.trunc(this.playerPosition));
+
+	      // Some tag configuration properties are only available during playback
+	      if (!this._esTagCfgSatisfied) this.eStatSatisfyTagCfg();
+
+	      // Check if SEEK player event previously occurred
+	      var pos = this.posEvent('seek');
+	      if (pos > -1) {
+	        // isTimeshift is "true" if playing time shifted content and "false" if back playing live content
+	        if (this._esDiffusion === 'timeshifting' && !this.isTimeshift) {
+	          // Back to live content
+	          this.esTagNotify('stop', pos);
+	        } else {
+	          // Replay or time shifted content
+	          this.esTagNotify('pause', pos);
+	        }
+	        this.forgetEvent('seek');
+	      }
+
+	      // Player may buffer during playback WITH or WITHOUT "freeze" video display content.
+	      // FIXME: notify tag with 'pause' event if BUFFERFULL player event occured ?
+	      // But this fix may significantly increase sessions ? (if live content)
+
+	      this.esTagNotify('play');
+	    }
+	  }, {
+	    key: 'onStop',
+	    value: function onStop() {
+	      this.recallEvent('stop', this.trunc(this.playerPosition));
+	      this.esTagNotify('stop');
+	    }
+	  }, {
+	    key: 'onPause',
+	    value: function onPause() {
+	      // PAUSE player event is triggered when end of VOD content is reached.
+	      // In this case, eStat tag expect to be notified with 'stop' (not 'pause').
+	      // Therefore, PAUSE player event is ignored and 'stop' is notified in ENDED player event
+	      if (!this.isLive && this.isEnd) return;
+
+	      // Safari + iOS workaround :
+	      // PAUSE player event is trigerred when "native" HTML5 video LIVE content is stopped.
+	      // In this case, eStat tag does not expect to be notified with 'pause' after 'stop'.
+	      if (this.posEvent('stop') > -1 && this.isLiveHtml5) {
+	        this.forgetEvent('stop');
+
+	        return;
+	      }
+
+	      this.esTagNotify('pause');
+	    }
+	  }, {
+	    key: 'onSeek',
+	    value: function onSeek(o) {
+	      /**
+	       * SEEK operation must be notified to eStat tag like the following :
+	       *
+	       *   'pause', then 'play' if diffusion is 'replay'.
+	       *   'pause', then 'play' if diffusion is 'timeshiftin' and SEEK is completed on recorded part.
+	       *   'stop', then 'play' if diffusion is 'timeshiftin' and SEEK if for go back to live.
+	       *
+	       * Clappr container trigger PLAY event after SEEK operation.
+	       */
+	      this.recallEvent('seek', this.trunc(this.playerPosition));
+	    }
+	  }, {
+	    key: 'onBuffering',
+	    value: function onBuffering() {
+	      // Recall BUFFERING player event only if PLAY player event occurred
+	      if (this.posEvent('play') > -1) {
+	        this.forgetEvent('play');
+	        this.recallEvent('buffering', this.trunc(this.playerPosition));
+	      }
+	    }
+	  }, {
+	    key: 'onBufferfull',
+	    value: function onBufferfull() {
+	      // Recall BUFFERFULL player event only if BUFFERING player event occurred
+	      var pos = this.posEvent('buffering');
+	      if (pos > -1) {
+	        this.forgetEvent('buffering');
+	        this.recallEvent('bufferfull', pos);
+	      }
+	    }
+	  }, {
+	    key: 'onEnded',
+	    value: function onEnded() {
+	      // Notify 'stop' to eStat tag if video ended (eStat compliance)
+	      this.esTagNotify('stop');
+	    }
+	  }, {
+	    key: 'playerElement',
+	    get: function get() {
+	      // Container DOM element is used for player element
+	      return this._container && this._container.el;
+	    }
+	  }, {
+	    key: 'playerPosition',
+	    get: function get() {
+	      return this.isLive ? 0 : this._position;
+	    }
+	  }, {
+	    key: 'playerDuration',
+	    get: function get() {
+	      return this.isLive ? 0 : this._container && this._container.getDuration();
+	    }
+	  }, {
+	    key: 'isLive',
+	    get: function get() {
+	      return this._container.getPlaybackType() === _clappr.Playback.LIVE;
+	    }
+	  }, {
+	    key: 'isLiveHtml5',
+	    get: function get() {
+	      return this.isLive && this._container.playback.name === 'html5_video';
+	    }
+	  }, {
+	    key: 'isTimeshift',
+	    get: function get() {
+	      return this._container.isDvrEnabled() && this._container.isDvrInUse();
+	    }
+	  }, {
+	    key: 'isEnd',
+	    get: function get() {
+	      return this.trunc(this.playerDuration) === this.trunc(this.playerPosition);
+	    }
+	  }]);
+
+	  return EstatPlugin;
+	}(_clappr.CorePlugin);
+
+	exports.default = EstatPlugin;
+	module.exports = exports['default'];
+
+/***/ },
+/* 1 */
+/***/ function(module, exports) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	exports.default = function (cb) {
+	  var version = arguments.length <= 1 || arguments[1] === undefined ? '5.2' : arguments[1];
+	  var debug = arguments[2];
+	  var secure = arguments[3];
+
+	  var win = window,
+	      doc = document,
+	      el = 'script';
+
+	  if (win.eStatTag) return;
+
+	  var s = secure === true ? 'https:' : '';
+	  var d = debug === true ? 'integration-' : '';
+	  var first = doc.getElementsByTagName(el)[0];
+	  var script = doc.createElement(el);
+
+	  script.src = s + '//prof.estat.com/js/mu-' + d + version + '.js';
+	  script.async = true;
+	  if (typeof cb === 'function') script.onload = cb;
+	  first.parentNode.insertBefore(script, first);
+	};
+
+	module.exports = exports['default']; /**
+	                                      * eStat "mu" library lazy loader.
+	                                      * @function
+	                                      * @param {function} The library loaded callback.
+	                                      * @param {string} The library version. (Default is '5.2')
+	                                      * @param {boolean} Set to true to load the debug/integration version of library.
+	                                      * @param {boolean} Set to true to force HTTPS load protocol. (Default behaviour is to match current protocol)
+	                                      */
+
+/***/ }
+/******/ ])
+});
+;
