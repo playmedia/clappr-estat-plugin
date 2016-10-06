@@ -60,6 +60,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _clappr = __webpack_require__(1);
@@ -125,6 +127,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  _createClass(EstatPlugin, [{
+	    key: 'destroy',
+	    value: function destroy() {
+	      // If video is not stopped, notify 'stop' to eStat tag
+	      // to ensure that pooling is also stopped.
+	      if (this.posEvent('stop') === -1) {
+	        this.esTagNotify('stop');
+	      }
+	      this._esTag = null;
+	      _get(EstatPlugin.prototype.__proto__ || Object.getPrototypeOf(EstatPlugin.prototype), 'destroy', this).call(this);
+	    }
+	  }, {
 	    key: 'bindEvents',
 	    value: function bindEvents() {
 	      this.listenTo(this.core.mediaControl, _clappr.Events.MEDIACONTROL_CONTAINERCHANGED, this.containerChanged);
@@ -415,7 +428,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 	exports.default = function (cb) {
-	  var version = arguments.length <= 1 || arguments[1] === undefined ? '5.2' : arguments[1];
+	  var version = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '5.2';
 	  var debug = arguments[2];
 	  var secure = arguments[3];
 
@@ -423,7 +436,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      doc = document,
 	      el = 'script';
 
-	  if (win.eStatTag) return;
+	  if (win.eStatTag) {
+	    if (typeof cb === 'function') cb();
+
+	    return;
+	  }
 
 	  var s = secure === true ? 'https:' : '';
 	  var d = debug === true ? 'integration-' : '';
