@@ -9,7 +9,11 @@
 export default function (cb, version='5.2', debug, secure) {
   let win = window, doc = document, el = 'script'
 
-  if (win.eStatTag) return
+  if (win.eStatTag) {
+    if (typeof cb === 'function') cb()
+
+    return
+  }
 
   let s = secure === true ? 'https:' : ''
   let d = debug === true ? 'integration-' : ''
