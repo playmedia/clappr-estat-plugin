@@ -46,6 +46,16 @@ export default class EstatPlugin extends CorePlugin {
     )
   }
 
+  destroy() {
+    // If video is not stopped, notify 'stop' to eStat tag
+    // to ensure that pooling is also stopped.
+    if (this.posEvent('stop') === -1) {
+      this.esTagNotify('stop')
+    }
+    this._esTag = null
+    super.destroy()
+  }
+
   bindEvents() {
     this.listenTo(this.core.mediaControl, Events.MEDIACONTROL_CONTAINERCHANGED, this.containerChanged)
     this._container = this.core.getCurrentContainer()
