@@ -129,8 +129,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(EstatPlugin, [{
 	    key: 'destroy',
 	    value: function destroy() {
-	      // If video is not stopped, notify 'stop' to eStat tag
-	      // to ensure that pooling is also stopped.
+	      // If video is not fully stopped, notify 'stop' to eStat tag
+	      // to ensure that "polling" events are stopped before destroy.
 	      if (this.posEvent('stop') === -1) {
 	        this.esTagNotify('stop');
 	      }
@@ -243,6 +243,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'esTagNotify',
 	    value: function esTagNotify(eventName, pos) {
+	      if (this._esDebug === true) {
+	        console.log(this.name + ' plugin : notify ' + eventName + ' event');
+	      }
 	      this._esTag && this._esTag.notifyPlayer(eventName, pos);
 	    }
 	  }, {
@@ -279,6 +282,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'onPlay',
 	    value: function onPlay() {
 	      this.recallEvent('play', this.trunc(this.playerPosition));
+	      this.forgetEvent('pause');
+	      this.forgetEvent('stop');
 
 	      // Some tag configuration properties are only available during playback
 	      if (!this._esTagCfgSatisfied) this.eStatSatisfyTagCfg();
@@ -306,12 +311,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'onStop',
 	    value: function onStop() {
+	      // Recall STOP player event and forget PLAY player event
 	      this.recallEvent('stop', this.trunc(this.playerPosition));
+	      this.forgetEvent('play');
+
 	      this.esTagNotify('stop');
 	    }
 	  }, {
 	    key: 'onPause',
 	    value: function onPause() {
+	      // Recall PAUSE player event and forget PLAY player event
+	      this.recallEvent('pause', this.trunc(this.playerPosition));
+	      this.forgetEvent('play');
+
 	      // PAUSE player event is triggered when end of VOD content is reached.
 	      // In this case, eStat tag expect to be notified with 'stop' (not 'pause').
 	      // Therefore, PAUSE player event is ignored and 'stop' is notified in ENDED player event
