@@ -81,7 +81,7 @@ Therefore, the minimal required plugin configuration is :
 
 This version use browser console to display informations. _(alert if eStatTag is not properly configured, and more...)_
 
-This property is only for development purposes. Do not set to `true` in production.
+This property is only for development purposes. Do NOT set to `true` in production.
 
 ## secure
 
