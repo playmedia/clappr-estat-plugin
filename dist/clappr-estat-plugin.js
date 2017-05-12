@@ -174,27 +174,7 @@ var EstatPlugin = function (_CorePlugin) {
     // Plugin configuration is required
     var _this = _possibleConstructorReturn(this, (EstatPlugin.__proto__ || Object.getPrototypeOf(EstatPlugin)).call(this, core));
 
-    if (!_this.options.estatPlugin) {
-      throw new Error(_this.name + ' plugin configuration is missing');
-    }
-
-    // eStat streaming tag configuration is required
-    _this._esTagCfg = _this.options.estatPlugin.eStatTagCfg;
-    if (!_this._esTagCfg) {
-      throw new Error(_this.name + ' plugin : "eStatTagCfg" configuration property is missing');
-    }
-
-    // Minimal requirements are serial and stream name
-    if (!_this._esTagCfg.serial) {
-      throw new Error(_this.name + ' plugin : eStat serial is missing in configuration');
-    }
-    if (!_this._esTagCfg.streaming || !_this._esTagCfg.streaming.streamName) {
-      throw new Error(_this.name + ' plugin : eStat stream name is missing in configuration');
-    }
-
-    _this._esEvents = {};
-    _this._esDebug = _this.options.estatPlugin.debug === true;
-    _this._esSecure = _this.options.estatPlugin.secure === true;
+    _this.configurePlugin();
 
     // Load eStat library
     _this._esLoaded = false;
@@ -206,6 +186,31 @@ var EstatPlugin = function (_CorePlugin) {
   }
 
   _createClass(EstatPlugin, [{
+    key: 'configurePlugin',
+    value: function configurePlugin() {
+      if (!this.options.estatPlugin) {
+        throw new Error(this.name + ' plugin configuration is missing');
+      }
+
+      // eStat streaming tag configuration is required
+      this._esTagCfg = this.options.estatPlugin.eStatTagCfg;
+      if (!this._esTagCfg) {
+        throw new Error(this.name + ' plugin : "eStatTagCfg" configuration property is missing');
+      }
+
+      // Minimal requirements are serial and stream name
+      if (!this._esTagCfg.serial) {
+        throw new Error(this.name + ' plugin : eStat serial is missing in configuration');
+      }
+      if (!this._esTagCfg.streaming || !this._esTagCfg.streaming.streamName) {
+        throw new Error(this.name + ' plugin : eStat stream name is missing in configuration');
+      }
+
+      this._esEvents = {};
+      this._esDebug = this.options.estatPlugin.debug === true;
+      this._esSecure = this.options.estatPlugin.secure === true;
+    }
+  }, {
     key: 'destroy',
     value: function destroy() {
       // If video is not fully stopped, notify 'stop' to eStat tag
@@ -230,7 +235,8 @@ var EstatPlugin = function (_CorePlugin) {
         this.listenTo(this._container, _clappr.Events.CONTAINER_STATE_BUFFERING, this.onBuffering);
         this.listenTo(this._container, _clappr.Events.CONTAINER_STATE_BUFFERFULL, this.onBufferfull);
         this.listenTo(this._container, _clappr.Events.CONTAINER_ENDED, this.onEnded);
-        this.eStatCreateTag();
+        this.configurePlugin();
+        this.eStatCreateTag(true);
       }
     }
   }, {
