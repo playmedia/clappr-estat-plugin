@@ -1,7 +1,7 @@
 <head>
-  <script type="text/javascript" src="http://cdn.clappr.io/latest/clappr.js"></script>
-  <!-- <script type="text/javascript" src="../dist/clappr-estat-plugin.min.js"></script> -->
-  <script type="text/javascript" src="../dist/clappr-estat-plugin.js"></script>
+  <script type="text/javascript" src="clappr.min.js"></script>
+  <!-- <script type="text/javascript" src="clappr-estat-plugin.min.js"></script> -->
+  <script type="text/javascript" src="clappr-estat-plugin.js"></script>
 </head>
 <body>
   <div id="player"></div>
@@ -9,14 +9,12 @@
     (function () {
       // Clappr.Log.setLevel(0)
 
-      // HLS VOD
-      // var videoUrl = 'http://www.streambox.fr/playlists/x36xhzz/x36xhzz.m3u8', videoName = 'Big Buck Bunny'
-
-      // HLS Live with DVR
-      // var videoUrl = 'http://live-api.miraclechannel.com/hls/miracle1.m3u8', videoName = 'Miracle Channel'
-
-      // MP4 VOD
-      var videoUrl = 'https://static.playmedia-cdn.net/resources/sample/h264_sintel_trailer-1080p.mp4', videoName = 'Sintel'
+      var videoUrl = 'https://wowza.jwplayer.com/live/jelly.stream/playlist.m3u8'                       // Live HLS
+      /*
+      var videoUrl = 'http://wowza.jwplayer.com/live/jelly.stream/playlist.m3u8?DVR'                   // Live with DVR HLS
+      var videoUrl = 'http://www.streambox.fr/playlists/x36xhzz/x36xhzz.m3u8'                          // VOD HLS
+      var videoUrl = 'https://static.playmedia-cdn.net/resources/sample/h264_sintel_trailer-1080p.mp4' // VOD MP4
+      */
 
       var player = new Clappr.Player({
         parentId: "#player",
@@ -34,7 +32,7 @@
           eStatTagCfg: {
             serial: 'ESTAT-STREAMING-SERIAL',
             streaming: {
-              streamName: videoName,
+              streamName: 'MyVideoName',
               // streamGenre: 'MyVideoGenre',
               // streamDuration: 1337,
             },
