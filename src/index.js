@@ -11,6 +11,22 @@ export default class EstatPlugin extends CorePlugin {
     super(core)
 
     // Plugin configuration is required
+    this.configurePlugin()
+
+    // Load eStat library
+    this._esLoaded = false
+    eStatLoader(
+      () => {
+        this._esLoaded = true
+        this.eStatCreateTag()
+      },
+      '5.2',
+      this._esDebug,
+      this._esSecure
+    )
+  }
+
+  configurePlugin() {
     if (!this.options.estatPlugin) {
       throw new Error(this.name + ' plugin configuration is missing')
     }
@@ -32,18 +48,6 @@ export default class EstatPlugin extends CorePlugin {
     this._esEvents = {}
     this._esDebug = this.options.estatPlugin.debug === true
     this._esSecure = this.options.estatPlugin.secure === true
-
-    // Load eStat library
-    this._esLoaded = false
-    eStatLoader(
-      () => {
-        this._esLoaded = true
-        this.eStatCreateTag()
-      },
-      '5.2',
-      this._esDebug,
-      this._esSecure
-    )
   }
 
   destroy() {
@@ -68,7 +72,8 @@ export default class EstatPlugin extends CorePlugin {
       this.listenTo(this._container, Events.CONTAINER_STATE_BUFFERING, this.onBuffering)
       this.listenTo(this._container, Events.CONTAINER_STATE_BUFFERFULL, this.onBufferfull)
       this.listenTo(this._container, Events.CONTAINER_ENDED, this.onEnded)
-      this.eStatCreateTag()
+      this.configurePlugin()
+      this.eStatCreateTag(true)
     }
   }
 

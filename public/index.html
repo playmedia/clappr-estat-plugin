@@ -16,6 +16,8 @@
       var videoUrl = 'https://static.playmedia-cdn.net/resources/sample/h264_sintel_trailer-1080p.mp4' // VOD MP4
       */
 
+      var ESTAT_SERIAL = 'ESTAT-STREAMING-SERIAL'
+
       var player = new Clappr.Player({
         parentId: "#player",
         source: videoUrl,
@@ -30,7 +32,7 @@
           // debug: true,
           // secure: true,
           eStatTagCfg: {
-            serial: 'ESTAT-STREAMING-SERIAL',
+            serial: ESTAT_SERIAL,
             streaming: {
               streamName: 'MyVideoName',
               // streamGenre: 'MyVideoGenre',
@@ -49,7 +51,23 @@
       //   })
       //   console.log('eStatStreamTag', tag)
       // }
+
+      // window.configurePlayer = function() {
+      //   var tag = player.configure({
+      //     source: videoUrl,
+      //     estatPlugin: {
+      //       eStatTagCfg: {
+      //         serial: ESTAT_SERIAL,
+      //         streaming: {
+      //           streamName: 'AnotherName',
+      //         },
+      //       },
+      //     }
+      //   })
+      // }
+
     })()
   </script>
   <!-- <button onclick="updateEstatTag()">Update eStat tag levels</button> -->
+  <!-- <button onclick="configurePlayer()">Load another source</button> -->
 </body>
