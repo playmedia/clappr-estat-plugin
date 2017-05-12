@@ -1,6 +1,6 @@
 {
   "name": "clappr-estat-plugin",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Mediametrie eStat streaming plugin for Clappr player.",
   "main": "dist/clappr-estat-plugin.js",
   "scripts": {
