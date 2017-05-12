@@ -10,7 +10,6 @@ export default class EstatPlugin extends CorePlugin {
   constructor(core) {
     super(core)
 
-    // Plugin configuration is required
     this.configurePlugin()
 
     // Load eStat library
@@ -27,8 +26,11 @@ export default class EstatPlugin extends CorePlugin {
   }
 
   configurePlugin() {
+    this._esEvents = {}
+
+    // Without configuration, tag instance will not be created
     if (!this.options.estatPlugin) {
-      throw new Error(this.name + ' plugin configuration is missing')
+      return
     }
 
     // eStat streaming tag configuration is required
@@ -45,7 +47,6 @@ export default class EstatPlugin extends CorePlugin {
       throw new Error(this.name + ' plugin : eStat stream name is missing in configuration')
     }
 
-    this._esEvents = {}
     this._esDebug = this.options.estatPlugin.debug === true
     this._esSecure = this.options.estatPlugin.secure === true
   }
@@ -112,6 +113,9 @@ export default class EstatPlugin extends CorePlugin {
   eStatCreateTag(recreate) {
     // Library must be loaded and container must be available
     if (!this._esLoaded || !this._container) return
+
+    // Ensure plugin is configured
+    if (!this._esTagCfg) return
 
     // Ensure tag is not already created
     if (this._esTag && !recreate) return
