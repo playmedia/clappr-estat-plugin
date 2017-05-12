@@ -119,6 +119,24 @@ tag.set({
 
 For more details about __eStatTag__ object, read eStat streaming manual provided by Mediametrie.
 
+# Load another source without destroy player
+
+Simply use Clappr player `configure()` method to load another source with new eStat tag configuration :
+
+```javascript
+player.configure({
+  source: "http://another.video/here.mp4",
+  estatPlugin: {
+    eStatTagCfg: {
+      serial: 'ESTAT-STREAMING-SERIAL',
+      streaming: {
+        streamName: 'AnotherVideoTitle',
+      },
+    },
+  }
+});
+```
+
 # Development
 
 Install dependencies :
