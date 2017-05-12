@@ -171,7 +171,6 @@ var EstatPlugin = function (_CorePlugin) {
   function EstatPlugin(core) {
     _classCallCheck(this, EstatPlugin);
 
-    // Plugin configuration is required
     var _this = _possibleConstructorReturn(this, (EstatPlugin.__proto__ || Object.getPrototypeOf(EstatPlugin)).call(this, core));
 
     _this.configurePlugin();
@@ -188,8 +187,11 @@ var EstatPlugin = function (_CorePlugin) {
   _createClass(EstatPlugin, [{
     key: 'configurePlugin',
     value: function configurePlugin() {
+      this._esEvents = {};
+
+      // Without configuration, tag instance will not be created
       if (!this.options.estatPlugin) {
-        throw new Error(this.name + ' plugin configuration is missing');
+        return;
       }
 
       // eStat streaming tag configuration is required
@@ -206,7 +208,6 @@ var EstatPlugin = function (_CorePlugin) {
         throw new Error(this.name + ' plugin : eStat stream name is missing in configuration');
       }
 
-      this._esEvents = {};
       this._esDebug = this.options.estatPlugin.debug === true;
       this._esSecure = this.options.estatPlugin.secure === true;
     }
@@ -278,6 +279,9 @@ var EstatPlugin = function (_CorePlugin) {
     value: function eStatCreateTag(recreate) {
       // Library must be loaded and container must be available
       if (!this._esLoaded || !this._container) return;
+
+      // Ensure plugin is configured
+      if (!this._esTagCfg) return;
 
       // Ensure tag is not already created
       if (this._esTag && !recreate) return;
