@@ -173,6 +173,7 @@ var EstatPlugin = function (_CorePlugin) {
 
     var _this = _possibleConstructorReturn(this, (EstatPlugin.__proto__ || Object.getPrototypeOf(EstatPlugin)).call(this, core));
 
+    _this._esEvents = {};
     _this.configurePlugin();
 
     // Load eStat library
@@ -187,8 +188,6 @@ var EstatPlugin = function (_CorePlugin) {
   _createClass(EstatPlugin, [{
     key: 'configurePlugin',
     value: function configurePlugin() {
-      this._esEvents = {};
-
       // Without configuration, tag instance will not be created
       if (!this.options.estatPlugin) {
         return;
@@ -214,13 +213,18 @@ var EstatPlugin = function (_CorePlugin) {
   }, {
     key: 'destroy',
     value: function destroy() {
-      // If video is not fully stopped, notify 'stop' to eStat tag
-      // to ensure that "polling" events are stopped before destroy.
-      if (this.posEvent('stop') === -1) {
-        this.esTagNotify('stop');
-      }
+      this.ensureTagIsStopped(this._esTag);
       this._esTag = null;
       _get(EstatPlugin.prototype.__proto__ || Object.getPrototypeOf(EstatPlugin.prototype), 'destroy', this).call(this);
+    }
+  }, {
+    key: 'ensureTagIsStopped',
+    value: function ensureTagIsStopped(tag) {
+      // If video is not fully stopped, notify 'stop' to eStat tag
+      // to ensure that "polling" events are stopped.
+      if (this.posEvent('stop') === -1) {
+        tag && tag.notifyPlayer('stop');
+      }
     }
   }, {
     key: 'bindEvents',
@@ -297,6 +301,14 @@ var EstatPlugin = function (_CorePlugin) {
       if (this._esTagCfgHasDiffusion) {
         this._esDiffusion = this._esTagCfg.streaming.diffusion;
       }
+
+      // Ensure previous tag is stopped (if created)
+      if (this._esTag) {
+        this.ensureTagIsStopped(this._esTag);
+      }
+
+      // Reset events
+      this._esEvents = {};
 
       // Build tag configuration
       var tagCfg = {};
