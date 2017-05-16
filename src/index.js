@@ -10,6 +10,7 @@ export default class EstatPlugin extends CorePlugin {
   constructor(core) {
     super(core)
 
+    this._esEvents = {}
     this.configurePlugin()
 
     // Load eStat library
@@ -26,8 +27,6 @@ export default class EstatPlugin extends CorePlugin {
   }
 
   configurePlugin() {
-    this._esEvents = {}
-
     // Without configuration, tag instance will not be created
     if (!this.options.estatPlugin) {
       return
@@ -52,13 +51,17 @@ export default class EstatPlugin extends CorePlugin {
   }
 
   destroy() {
-    // If video is not fully stopped, notify 'stop' to eStat tag
-    // to ensure that "polling" events are stopped before destroy.
-    if (this.posEvent('stop') === -1) {
-      this.esTagNotify('stop')
-    }
+    this.ensureTagIsStopped(this._esTag)
     this._esTag = null
     super.destroy()
+  }
+
+  ensureTagIsStopped(tag) {
+    // If video is not fully stopped, notify 'stop' to eStat tag
+    // to ensure that "polling" events are stopped.
+    if (this.posEvent('stop') === -1) {
+      tag && tag.notifyPlayer('stop')
+    }
   }
 
   bindEvents() {
@@ -131,6 +134,14 @@ export default class EstatPlugin extends CorePlugin {
     if (this._esTagCfgHasDiffusion) {
       this._esDiffusion = this._esTagCfg.streaming.diffusion
     }
+
+    // Ensure previous tag is stopped (if created)
+    if (this._esTag) {
+      this.ensureTagIsStopped(this._esTag)
+    }
+
+    // Reset events
+    this._esEvents = {}
 
     // Build tag configuration
     let tagCfg = {}
