@@ -6,7 +6,6 @@
 <body>
   <div id="player"></div>
   <script>
-    (function () {
       // Clappr.Log.setLevel(0)
 
       var videoUrl = 'https://wowza.jwplayer.com/live/jelly.stream/playlist.m3u8'                       // Live HLS
@@ -42,7 +41,7 @@
         }
       })
 
-      // window.updateEstatTag = function() {
+      // updateEstatTag = function() {
       //   var tag = player.eStatStreamTag()
       //   tag.set({
       //     levels: {
@@ -52,7 +51,7 @@
       //   console.log('eStatStreamTag', tag)
       // }
 
-      // window.configurePlayer = function() {
+      // configurePlayer = function() {
       //   var tag = player.configure({
       //     source: videoUrl,
       //     estatPlugin: {
@@ -66,7 +65,6 @@
       //   })
       // }
 
-    })()
   </script>
   <!-- <button onclick="updateEstatTag()">Update eStat tag levels</button> -->
   <!-- <button onclick="configurePlayer()">Load another source</button> -->
