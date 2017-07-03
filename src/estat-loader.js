@@ -6,8 +6,10 @@
  * @param {boolean} Set to true to load the debug/integration version of library.
  * @param {boolean} Set to true to force HTTPS load protocol. (Default behaviour is to match current protocol)
  */
-export default function (cb, version='5.2', debug, secure) {
-  let win = window, doc = document, el = 'script'
+export default function (cb, version = '5.2', debug, secure) {
+  let win = window
+  let doc = document
+  let el = 'script'
 
   if (win.eStatTag) {
     if (typeof cb === 'function') cb()

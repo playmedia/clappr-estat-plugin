@@ -39,10 +39,10 @@ export default class EstatPlugin extends CorePlugin {
     }
 
     // Minimal requirements are serial and stream name
-    if(!this._esTagCfg.serial) {
+    if (!this._esTagCfg.serial) {
       throw new Error(this.name + ' plugin : eStat serial is missing in configuration')
     }
-    if(!this._esTagCfg.streaming || !this._esTagCfg.streaming.streamName) {
+    if (!this._esTagCfg.streaming || !this._esTagCfg.streaming.streamName) {
       throw new Error(this.name + ' plugin : eStat stream name is missing in configuration')
     }
 
@@ -108,7 +108,7 @@ export default class EstatPlugin extends CorePlugin {
         callbackPosition: () => { return this.trunc(this.playerPosition) },
         playerName: 'Clappr',
         playerVersion: version,
-        playerObj: this.playerElement,
+        playerObj: this.playerElement
       }
     }
   }
@@ -124,8 +124,8 @@ export default class EstatPlugin extends CorePlugin {
     if (this._esTag && !recreate) return
 
     // Check for overridable streaming properties
-    this._esTagCfgHasDuration = this._esTagCfg.streaming.streamDuration ? true : false
-    this._esTagCfgHasDiffusion = this._esTagCfg.streaming.diffusion ? true : false
+    this._esTagCfgHasDuration = !!this._esTagCfg.streaming.streamDuration
+    this._esTagCfgHasDiffusion = !!this._esTagCfg.streaming.diffusion
 
     // Check if configuration is already satisfied
     this._esTagCfgSatisfied = this._esTagCfgHasDuration && this._esTagCfgHasDiffusion
@@ -148,7 +148,7 @@ export default class EstatPlugin extends CorePlugin {
     $.extend(true, tagCfg, this.eStatTagDefaultConfig(), this._esTagCfg)
 
     // Create eStat stream tag instance (Also trigger authentication request)
-    this._esTag = new window.eStatTag(tagCfg)
+    this._esTag = new window.eStatTag(tagCfg) // eslint-disable-line new-cap
   }
 
   eStatSatisfyTagCfg() {
@@ -225,7 +225,7 @@ export default class EstatPlugin extends CorePlugin {
     return this._esEvents.hasOwnProperty(name) ? this._esEvents[name] : -1
   }
 
-  onTimeUpdate(o){
+  onTimeUpdate(o) {
     this._position = o.current || 0
   }
 
