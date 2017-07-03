@@ -4,7 +4,7 @@ const NotifierPlugin = require('webpack-notifier')
 
 var outputFile, plugins = []
 
-if (process.env.npm_lifecycle_event === 'dist') {
+if (process.env.npm_lifecycle_event === 'build-min') {
   outputFile = 'clappr-estat-plugin.min.js'
   plugins.push(new webpack.optimize.UglifyJsPlugin({
     output: {
