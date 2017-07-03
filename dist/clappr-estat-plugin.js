@@ -43,9 +43,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
 /******/
-/******/ 	// identity function for calling harmony imports with the correct context
-/******/ 	__webpack_require__.i = function(value) { return value; };
-/******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
@@ -73,63 +70,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-exports.default = function (cb) {
-  var version = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '5.2';
-  var debug = arguments[2];
-  var secure = arguments[3];
-
-  var win = window,
-      doc = document,
-      el = 'script';
-
-  if (win.eStatTag) {
-    if (typeof cb === 'function') cb();
-
-    return;
-  }
-
-  var s = secure === true ? 'https:' : '';
-  var d = debug === true ? 'integration-' : '';
-  var first = doc.getElementsByTagName(el)[0];
-  var script = doc.createElement(el);
-
-  script.src = s + '//prof.estat.com/js/mu-' + d + version + '.js';
-  script.async = true;
-  if (typeof cb === 'function') script.onload = cb;
-  first.parentNode.insertBefore(script, first);
-};
-
-module.exports = exports['default']; /**
-                                      * eStat "mu" library lazy loader.
-                                      * @function
-                                      * @param {function} The library loaded callback.
-                                      * @param {string} The library version. (Default is '5.2')
-                                      * @param {boolean} Set to true to load the debug/integration version of library.
-                                      * @param {boolean} Set to true to force HTTPS load protocol. (Default behaviour is to match current protocol)
-                                      */
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
-
-/***/ }),
-/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -145,7 +90,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _clappr = __webpack_require__(1);
 
-var _estatLoader = __webpack_require__(0);
+var _estatLoader = __webpack_require__(2);
 
 var _estatLoader2 = _interopRequireDefault(_estatLoader);
 
@@ -220,11 +165,9 @@ var EstatPlugin = function (_CorePlugin) {
   }, {
     key: 'ensureTagIsStopped',
     value: function ensureTagIsStopped(tag) {
-      // If video is not fully stopped, notify 'stop' to eStat tag
-      // to ensure that "polling" events are stopped.
-      if (this.posEvent('stop') === -1) {
-        tag && tag.notifyPlayer('stop');
-      }
+      // notify 'stop' to eStat tag to ensure that "polling" events are stopped.
+      // eStatTag handle multiple consecutive call (it send event only once)
+      tag && tag.notifyPlayer('stop');
     }
   }, {
     key: 'bindEvents',
@@ -240,8 +183,6 @@ var EstatPlugin = function (_CorePlugin) {
         this.listenTo(this._container, _clappr.Events.CONTAINER_STATE_BUFFERING, this.onBuffering);
         this.listenTo(this._container, _clappr.Events.CONTAINER_STATE_BUFFERFULL, this.onBufferfull);
         this.listenTo(this._container, _clappr.Events.CONTAINER_ENDED, this.onEnded);
-        this.configurePlugin();
-        this.eStatCreateTag(true);
       }
     }
   }, {
@@ -255,6 +196,8 @@ var EstatPlugin = function (_CorePlugin) {
     key: 'containerChanged',
     value: function containerChanged() {
       this.stopListening();
+      this.configurePlugin();
+      this.eStatCreateTag(true);
       this.bindEvents();
     }
   }, {
@@ -291,8 +234,8 @@ var EstatPlugin = function (_CorePlugin) {
       if (this._esTag && !recreate) return;
 
       // Check for overridable streaming properties
-      this._esTagCfgHasDuration = this._esTagCfg.streaming.streamDuration ? true : false;
-      this._esTagCfgHasDiffusion = this._esTagCfg.streaming.diffusion ? true : false;
+      this._esTagCfgHasDuration = !!this._esTagCfg.streaming.streamDuration;
+      this._esTagCfgHasDiffusion = !!this._esTagCfg.streaming.diffusion;
 
       // Check if configuration is already satisfied
       this._esTagCfgSatisfied = this._esTagCfgHasDuration && this._esTagCfgHasDiffusion;
@@ -315,15 +258,15 @@ var EstatPlugin = function (_CorePlugin) {
       _clappr.$.extend(true, tagCfg, this.eStatTagDefaultConfig(), this._esTagCfg);
 
       // Create eStat stream tag instance (Also trigger authentication request)
-      this._esTag = new window.eStatTag(tagCfg);
+      this._esTag = new window.eStatTag(tagCfg); // eslint-disable-line new-cap
     }
   }, {
     key: 'eStatSatisfyTagCfg',
     value: function eStatSatisfyTagCfg() {
-      var cfg = { streaming: {} };
+      var cfg = { streaming: {}
 
-      // Resolve eStat streaming diffusion according playback type
-      if (!this._esTagCfgHasDiffusion) {
+        // Resolve eStat streaming diffusion according playback type
+      };if (!this._esTagCfgHasDiffusion) {
         if (this.isLive) {
           cfg.streaming.diffusion = this._container.isDvrEnabled() ? 'timeshifting' : 'live';
         } else {
@@ -523,6 +466,58 @@ var EstatPlugin = function (_CorePlugin) {
 
 exports.default = EstatPlugin;
 module.exports = exports['default'];
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.default = function (cb) {
+  var version = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '5.2';
+  var debug = arguments[2];
+  var secure = arguments[3];
+
+  var win = window;
+  var doc = document;
+  var el = 'script';
+
+  if (win.eStatTag) {
+    if (typeof cb === 'function') cb();
+
+    return;
+  }
+
+  var s = secure === true ? 'https:' : '';
+  var d = debug === true ? 'integration-' : '';
+  var first = doc.getElementsByTagName(el)[0];
+  var script = doc.createElement(el);
+
+  script.src = s + '//prof.estat.com/js/mu-' + d + version + '.js';
+  script.async = true;
+  if (typeof cb === 'function') script.onload = cb;
+  first.parentNode.insertBefore(script, first);
+};
+
+module.exports = exports['default']; /**
+                                      * eStat "mu" library lazy loader.
+                                      * @function
+                                      * @param {function} The library loaded callback.
+                                      * @param {string} The library version. (Default is '5.2')
+                                      * @param {boolean} Set to true to load the debug/integration version of library.
+                                      * @param {boolean} Set to true to force HTTPS load protocol. (Default behaviour is to match current protocol)
+                                      */
 
 /***/ })
 /******/ ]);
