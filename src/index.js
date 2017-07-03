@@ -57,11 +57,9 @@ export default class EstatPlugin extends CorePlugin {
   }
 
   ensureTagIsStopped(tag) {
-    // If video is not fully stopped, notify 'stop' to eStat tag
-    // to ensure that "polling" events are stopped.
-    if (this.posEvent('stop') === -1) {
-      tag && tag.notifyPlayer('stop')
-    }
+    // notify 'stop' to eStat tag to ensure that "polling" events are stopped.
+    // eStatTag handle multiple consecutive call (it send event only once)
+    tag && tag.notifyPlayer('stop')
   }
 
   bindEvents() {
@@ -76,8 +74,6 @@ export default class EstatPlugin extends CorePlugin {
       this.listenTo(this._container, Events.CONTAINER_STATE_BUFFERING, this.onBuffering)
       this.listenTo(this._container, Events.CONTAINER_STATE_BUFFERFULL, this.onBufferfull)
       this.listenTo(this._container, Events.CONTAINER_ENDED, this.onEnded)
-      this.configurePlugin()
-      this.eStatCreateTag(true)
     }
   }
 
@@ -89,6 +85,8 @@ export default class EstatPlugin extends CorePlugin {
 
   containerChanged() {
     this.stopListening()
+    this.configurePlugin()
+    this.eStatCreateTag(true)
     this.bindEvents()
   }
 
