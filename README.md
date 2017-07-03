@@ -142,7 +142,7 @@ player.configure({
 Install dependencies :
 
 ```shell
-  yarn
+  yarn install
 ```
 
 Start dev. HTTP server (http://0.0.0.0:8080) :
