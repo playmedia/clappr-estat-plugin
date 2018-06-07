@@ -373,10 +373,10 @@ var EstatPlugin = function (_CorePlugin) {
       // Therefore, PAUSE player event is ignored and 'stop' is notified in ENDED player event
       if (!this.isLive && this.isEnd) return;
 
-      // Safari + iOS workaround :
       // PAUSE player event is trigerred when "native" HTML5 video LIVE content is stopped.
       // In this case, eStat tag does not expect to be notified with 'pause' after 'stop'.
-      if (this.posEvent('stop') > -1 && this.isLiveHtml5) {
+      // UPDATE: since Clappr 0.2.80, PAUSE player event may also be trigerred on desktop
+      if (this.posEvent('stop') > -1) {
         this.forgetEvent('stop');
 
         return;
@@ -443,11 +443,6 @@ var EstatPlugin = function (_CorePlugin) {
     key: 'isLive',
     get: function get() {
       return this._container.getPlaybackType() === _clappr.Playback.LIVE;
-    }
-  }, {
-    key: 'isLiveHtml5',
-    get: function get() {
-      return this.isLive && this._container.playback.name === 'html5_video';
     }
   }, {
     key: 'isTimeshift',
