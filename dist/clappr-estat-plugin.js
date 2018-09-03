@@ -7,7 +7,7 @@
 		exports["ClapprEstatPlugin"] = factory(require("clappr"));
 	else
 		root["ClapprEstatPlugin"] = factory(root["Clappr"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
+})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -103,6 +103,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // Clappr player is Copyright 2014 Globo.com Player authors. All rights reserved.
 // eStat’Streaming is Copyright 2012 Médiamétrie-eStat. All rights reserved.
 
+/* global PLUGIN_VERSION: false */
+
 var EstatPlugin = function (_CorePlugin) {
   _inherits(EstatPlugin, _CorePlugin);
 
@@ -126,7 +128,7 @@ var EstatPlugin = function (_CorePlugin) {
     (0, _estatLoader2.default)(function () {
       _this._esLoaded = true;
       _this.eStatCreateTag();
-    }, '5.2', _this._esDebug, _this._esSecure);
+    });
     return _this;
   }
 
@@ -152,8 +154,8 @@ var EstatPlugin = function (_CorePlugin) {
         throw new Error(this.name + ' plugin : eStat stream name is missing in configuration');
       }
 
+      // Display eStat tag notified events in console if set to true
       this._esDebug = this.options.estatPlugin.debug === true;
-      this._esSecure = this.options.estatPlugin.secure === true;
     }
   }, {
     key: 'destroy',
@@ -217,7 +219,9 @@ var EstatPlugin = function (_CorePlugin) {
           },
           playerName: 'Clappr',
           playerVersion: _clappr.version,
-          playerObj: this.playerElement
+          playerObj: this.playerElement,
+          pluginName: 'clappr-estat-plugin',
+          pluginVersion: this.pluginVersion
         }
       };
     }
@@ -430,6 +434,11 @@ var EstatPlugin = function (_CorePlugin) {
       return this._container && this._container.el;
     }
   }, {
+    key: 'pluginVersion',
+    get: function get() {
+      return "0.4.0";
+    }
+  }, {
     key: 'playerPosition',
     get: function get() {
       return this.isLive ? 0 : this._position;
@@ -480,9 +489,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 exports.default = function (cb) {
-  var version = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '5.2';
-  var debug = arguments[2];
-  var secure = arguments[3];
+  var version = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '5.4';
 
   var win = window;
   var doc = document;
@@ -494,12 +501,10 @@ exports.default = function (cb) {
     return;
   }
 
-  var s = secure === true ? 'https:' : '';
-  var d = debug === true ? 'integration-' : '';
   var first = doc.getElementsByTagName(el)[0];
   var script = doc.createElement(el);
 
-  script.src = s + '//prof.estat.com/js/mu-' + d + version + '.js';
+  script.src = 'https://prof.estat.com/js/mu-' + version + '.js';
   script.async = true;
   if (typeof cb === 'function') script.onload = cb;
   first.parentNode.insertBefore(script, first);
@@ -509,9 +514,7 @@ module.exports = exports['default']; /**
                                       * eStat "mu" library lazy loader.
                                       * @function
                                       * @param {function} The library loaded callback.
-                                      * @param {string} The library version. (Default is '5.2')
-                                      * @param {boolean} Set to true to load the debug/integration version of library.
-                                      * @param {boolean} Set to true to force HTTPS load protocol. (Default behaviour is to match current protocol)
+                                      * @param {string} The library version. (Default is '5.4')
                                       */
 
 /***/ })
