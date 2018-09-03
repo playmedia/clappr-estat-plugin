@@ -1,6 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const NotifierPlugin = require('webpack-notifier')
+const version = require('./package.json').version
 
 var outputFile, plugins = []
 
@@ -19,6 +20,10 @@ plugins.push(new NotifierPlugin({
   title: outputFile,
   alwaysNotify: true,
   // contentImage: path.resolve(__dirname, 'path/to/image.png')
+}))
+
+plugins.push(new webpack.DefinePlugin({
+  PLUGIN_VERSION: JSON.stringify(version),
 }))
 
 module.exports = {
@@ -46,7 +51,7 @@ module.exports = {
           path.resolve(__dirname, 'src')
         ],
         options: {
-          presets: ['es2015'],
+          presets: ['env'],
           plugins: ['add-module-exports'],
         },
       },
