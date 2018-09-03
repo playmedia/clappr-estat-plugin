@@ -4,6 +4,8 @@
 import {CorePlugin, Events, Playback, version, $} from 'clappr'
 import eStatLoader from './estat-loader'
 
+/* global PLUGIN_VERSION: false */
+
 export default class EstatPlugin extends CorePlugin {
   get name() { return 'estat_streaming_mu' }
 
@@ -15,15 +17,10 @@ export default class EstatPlugin extends CorePlugin {
 
     // Load eStat library
     this._esLoaded = false
-    eStatLoader(
-      () => {
-        this._esLoaded = true
-        this.eStatCreateTag()
-      },
-      '5.2',
-      this._esDebug,
-      this._esSecure
-    )
+    eStatLoader(() => {
+      this._esLoaded = true
+      this.eStatCreateTag()
+    })
   }
 
   configurePlugin() {
@@ -46,8 +43,8 @@ export default class EstatPlugin extends CorePlugin {
       throw new Error(this.name + ' plugin : eStat stream name is missing in configuration')
     }
 
+    // Display eStat tag notified events in console if set to true
     this._esDebug = this.options.estatPlugin.debug === true
-    this._esSecure = this.options.estatPlugin.secure === true
   }
 
   destroy() {
@@ -95,6 +92,10 @@ export default class EstatPlugin extends CorePlugin {
     return this._container && this._container.el
   }
 
+  get pluginVersion() {
+    return PLUGIN_VERSION
+  }
+
   eStatTagDefaultConfig() {
     // container must be available
     if (!this._container) return {}
@@ -106,7 +107,9 @@ export default class EstatPlugin extends CorePlugin {
         callbackPosition: () => { return this.trunc(this.playerPosition) },
         playerName: 'Clappr',
         playerVersion: version,
-        playerObj: this.playerElement
+        playerObj: this.playerElement,
+        pluginName: 'clappr-estat-plugin',
+        pluginVersion: this.pluginVersion
       }
     }
   }
