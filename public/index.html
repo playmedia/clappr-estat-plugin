@@ -1,19 +1,21 @@
 <head>
-  <script type="text/javascript" src="clappr.min.js"></script>
+  <!-- <script type="text/javascript" src="clappr.min.js"></script> -->
   <!-- <script type="text/javascript" src="clappr-estat-plugin.min.js"></script> -->
+  <!-- <script src="http://192.168.1.113:8080/console.js"></script> -->
+  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr@0.2.98/dist/clappr.min.js"></script> -->
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
   <script type="text/javascript" src="clappr-estat-plugin.js"></script>
 </head>
 <body>
   <div id="player"></div>
   <script>
       // Clappr.Log.setLevel(0)
+      console.log('Clappr version ' + Clappr.version);
 
-      var videoUrl = 'https://wowza.jwplayer.com/live/jelly.stream/playlist.m3u8'                       // Live HLS
-      /*
-      var videoUrl = 'http://wowza.jwplayer.com/live/jelly.stream/playlist.m3u8?DVR'                   // Live with DVR HLS
-      var videoUrl = 'http://www.streambox.fr/playlists/x36xhzz/x36xhzz.m3u8'                          // VOD HLS
-      var videoUrl = 'https://static.playmedia-cdn.net/resources/sample/h264_sintel_trailer-1080p.mp4' // VOD MP4
-      */
+      var videoUrl = 'https://ec.playmedia.fr/beblack/africa/playlist.m3u8'                       // Live HLS
+      // var videoUrl = 'https://static.playmedia-cdn.net/resources/sample/h264_sintel_trailer-1080p.mp4' // VOD MP4
+      // var videoUrl = 'http://www.streambox.fr/playlists/x36xhzz/x36xhzz.m3u8'                          // VOD HLS
 
       var ESTAT_SERIAL = 'ESTAT-STREAMING-SERIAL'
 
@@ -27,15 +29,18 @@
         plugins: {
           core: [ClapprEstatPlugin],
         },
+        playback: {
+          playInline: true,
+        },
         estatPlugin: {
           // debug: true,
-          // secure: true,
           eStatTagCfg: {
             serial: ESTAT_SERIAL,
             streaming: {
               streamName: 'MyVideoName',
               // streamGenre: 'MyVideoGenre',
               // streamDuration: 1337,
+              // debug: true,
             },
           },
         }
