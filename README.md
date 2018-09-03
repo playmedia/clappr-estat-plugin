@@ -12,8 +12,8 @@ Add both Clappr and the plugin scripts to your HTML:
 
 ```html
 <head>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clappr/0.2.66/clappr.min.js"></script>
-  <script type="text/javascript" src="dist/clappr-estat-plugin.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr-estat-plugin@latest/dist/clappr-estat-plugin.min.js"></script>
 </head>
 ```
 
@@ -53,6 +53,8 @@ Default plugin behaviour is to automatically update the following __eStatTag__ c
       playerName: '*',       // value is set to 'Clappr'
       playerVersion: '*',    // value is set to Clappr player version
       playerObject: '*',     // value is set to player container element
+      pluginName: '*',       // value is set to 'clappr-estat-plugin'
+      pluginVersion: '*',    // value is set to Clappr eStat streaming plugin version
       streamDuration: '*',   // value is set to video duration (if available, otherwise is not set)
     }
   }
@@ -75,19 +77,7 @@ Therefore, the minimal required plugin configuration is :
   /* [...] */
 ```
 
-## debug
-
-`debug` __optional__ property is a boolean which indicate if the developement version of the eStat library is loaded. Default value is `false`.
-
-This version use browser console to display informations. _(alert if eStatTag is not properly configured, and more...)_
-
-This property is only for development purposes. Do NOT set to `true` in production.
-
-## secure
-
-`secure` __optional__ property is a boolean which force the eStat library to be loaded using HTTPS protocol. Default value is `false`. _(default behaviour is to match current document protocol)_
-
-# External Interface
+# Clappr External Interface
 
 The `eStatStreamTag()` method is added to Clappr player instance. This method return the __eStatTag__ instance object associated to player.
 
@@ -148,5 +138,5 @@ Install dependencies :
 Start dev. HTTP server (http://0.0.0.0:8080) :
 
 ```shell
-  yarn run start
+  yarn start
 ```
