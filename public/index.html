@@ -1,10 +1,7 @@
 <head>
-  <!-- <script type="text/javascript" src="clappr.min.js"></script> -->
-  <!-- <script type="text/javascript" src="clappr-estat-plugin.min.js"></script> -->
   <!-- <script src="http://192.168.1.113:8080/console.js"></script> -->
-  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr@0.2.98/dist/clappr.min.js"></script> -->
-
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr@0.2.100/dist/clappr.min.js"></script>
+  <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script> -->
   <script type="text/javascript" src="clappr-estat-plugin.js"></script>
 </head>
 <body>
@@ -13,11 +10,11 @@
       // Clappr.Log.setLevel(0)
       console.log('Clappr version ' + Clappr.version);
 
-      var videoUrl = 'https://ec.playmedia.fr/beblack/africa/playlist.m3u8'                       // Live HLS
-      // var videoUrl = 'https://static.playmedia-cdn.net/resources/sample/h264_sintel_trailer-1080p.mp4' // VOD MP4
-      // var videoUrl = 'http://www.streambox.fr/playlists/x36xhzz/x36xhzz.m3u8'                          // VOD HLS
+      var videoUrl = 'https://ec.playmedia.fr/beblack/africa/playlist.m3u8';                       // Live HLS
+      // var videoUrl = 'https://static.playmedia-cdn.net/resources/sample/h264_sintel_trailer-1080p.mp4'; // VOD MP4
+      // var videoUrl = 'http://www.streambox.fr/playlists/x36xhzz/x36xhzz.m3u8';                          // VOD HLS
 
-      var ESTAT_SERIAL = 'ESTAT-STREAMING-SERIAL'
+      var ESTAT_SERIAL = 'ESTAT-STREAMING-SERIAL';
 
       var player = new Clappr.Player({
         parentId: "#player",
@@ -33,7 +30,7 @@
           playInline: true,
         },
         estatPlugin: {
-          // debug: true,
+          debug: true,
           eStatTagCfg: {
             serial: ESTAT_SERIAL,
             streaming: {
@@ -44,9 +41,9 @@
             },
           },
         }
-      })
+      });
 
-      // updateEstatTag = function() {
+      // var updateEstatTag = function() {
       //   var tag = player.eStatStreamTag()
       //   tag.set({
       //     levels: {
@@ -54,9 +51,9 @@
       //     }
       //   })
       //   console.log('eStatStreamTag', tag)
-      // }
+      // };
 
-      // configurePlayer = function() {
+      // var configurePlayer = function() {
       //   var tag = player.configure({
       //     source: videoUrl,
       //     estatPlugin: {
@@ -68,7 +65,7 @@
       //       },
       //     }
       //   })
-      // }
+      // };
 
   </script>
   <!-- <button onclick="updateEstatTag()">Update eStat tag levels</button> -->
