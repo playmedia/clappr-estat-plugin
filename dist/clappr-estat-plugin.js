@@ -7,7 +7,7 @@
 		exports["ClapprEstatPlugin"] = factory(require("clappr"));
 	else
 		root["ClapprEstatPlugin"] = factory(root["Clappr"]);
-})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
+})(window, function(__WEBPACK_EXTERNAL_MODULE__1__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -46,12 +46,32 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
 /******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -69,6 +89,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/
+/******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
@@ -83,99 +104,130 @@ return /******/ (function(modules) { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+exports.default = void 0;
 
 var _clappr = __webpack_require__(1);
 
-var _estatLoader = __webpack_require__(2);
-
-var _estatLoader2 = _interopRequireDefault(_estatLoader);
+var _estatLoader = _interopRequireDefault(__webpack_require__(2));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // Clappr player is Copyright 2014 Globo.com Player authors. All rights reserved.
-// eStat’Streaming is Copyright 2012 Médiamétrie-eStat. All rights reserved.
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
+
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 /* global PLUGIN_VERSION: false */
-
-var EstatPlugin = function (_CorePlugin) {
+var EstatPlugin =
+/*#__PURE__*/
+function (_CorePlugin) {
   _inherits(EstatPlugin, _CorePlugin);
 
   _createClass(EstatPlugin, [{
-    key: 'name',
+    key: "name",
     get: function get() {
       return 'estat_streaming_mu';
     }
   }]);
 
   function EstatPlugin(core) {
+    var _this;
+
     _classCallCheck(this, EstatPlugin);
 
-    var _this = _possibleConstructorReturn(this, (EstatPlugin.__proto__ || Object.getPrototypeOf(EstatPlugin)).call(this, core));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EstatPlugin).call(this, core));
+
+    if (!_this.canLoad()) {
+      console.error && console.error(_this.name + ' plugin : Clappr version 0.3.0 or greater not yet supported');
+      return _possibleConstructorReturn(_this);
+    }
 
     _this._esEvents = {};
-    _this.configurePlugin();
 
-    // Load eStat library
+    _this.configurePlugin(); // Load eStat library
+
+
     _this._esLoaded = false;
-    (0, _estatLoader2.default)(function () {
+    (0, _estatLoader.default)(function () {
       _this._esLoaded = true;
+
       _this.eStatCreateTag();
     });
     return _this;
   }
 
   _createClass(EstatPlugin, [{
-    key: 'configurePlugin',
+    key: "canLoad",
+    value: function canLoad() {
+      var v = _clappr.version.split('.');
+
+      return v.length > 1 && v[1] < 3;
+    }
+  }, {
+    key: "configurePlugin",
     value: function configurePlugin() {
       // Without configuration, tag instance will not be created
       if (!this.options.estatPlugin) {
         return;
-      }
+      } // eStat streaming tag configuration is required
 
-      // eStat streaming tag configuration is required
+
       this._esTagCfg = this.options.estatPlugin.eStatTagCfg;
+
       if (!this._esTagCfg) {
         throw new Error(this.name + ' plugin : "eStatTagCfg" configuration property is missing');
-      }
+      } // Minimal requirements are serial and stream name
 
-      // Minimal requirements are serial and stream name
+
       if (!this._esTagCfg.serial) {
         throw new Error(this.name + ' plugin : eStat serial is missing in configuration');
       }
+
       if (!this._esTagCfg.streaming || !this._esTagCfg.streaming.streamName) {
         throw new Error(this.name + ' plugin : eStat stream name is missing in configuration');
-      }
+      } // Display eStat tag notified events in console if set to true
 
-      // Display eStat tag notified events in console if set to true
+
       this._esDebug = this.options.estatPlugin.debug === true;
     }
   }, {
-    key: 'destroy',
+    key: "destroy",
     value: function destroy() {
       this.ensureTagIsStopped(this._esTag);
       this._esTag = null;
-      _get(EstatPlugin.prototype.__proto__ || Object.getPrototypeOf(EstatPlugin.prototype), 'destroy', this).call(this);
+
+      _get(_getPrototypeOf(EstatPlugin.prototype), "destroy", this).call(this);
     }
   }, {
-    key: 'ensureTagIsStopped',
+    key: "ensureTagIsStopped",
     value: function ensureTagIsStopped(tag) {
       // notify 'stop' to eStat tag to ensure that "polling" events are stopped.
       // eStatTag handle multiple consecutive call (it send event only once)
       tag && tag.notifyPlayer('stop');
     }
   }, {
-    key: 'bindEvents',
+    key: "bindEvents",
     value: function bindEvents() {
       this.listenTo(this.core.mediaControl, _clappr.Events.MEDIACONTROL_CONTAINERCHANGED, this.containerChanged);
       this._container = this.core.getCurrentContainer();
+
       if (this._container) {
         this.listenTo(this._container, _clappr.Events.CONTAINER_TIMEUPDATE, this.onTimeUpdate);
         this.listenTo(this._container, _clappr.Events.CONTAINER_PLAY, this.onPlay);
@@ -188,14 +240,14 @@ var EstatPlugin = function (_CorePlugin) {
       }
     }
   }, {
-    key: 'getExternalInterface',
+    key: "getExternalInterface",
     value: function getExternalInterface() {
       return {
         eStatStreamTag: this.eStatTag
       };
     }
   }, {
-    key: 'containerChanged',
+    key: "containerChanged",
     value: function containerChanged() {
       this.stopListening();
       this.configurePlugin();
@@ -203,17 +255,17 @@ var EstatPlugin = function (_CorePlugin) {
       this.bindEvents();
     }
   }, {
-    key: 'eStatTagDefaultConfig',
+    key: "eStatTagDefaultConfig",
     value: function eStatTagDefaultConfig() {
       var _this2 = this;
 
       // container must be available
       if (!this._container) return {};
-
       return {
         measure: 'streaming',
         streaming: {
-          diffusion: 'replay', // Arbitrary set to 'replay', resolved at playback time
+          diffusion: 'replay',
+          // Arbitrary set to 'replay', resolved at playback time
           callbackPosition: function callbackPosition() {
             return _this2.trunc(_this2.playerPosition);
           },
@@ -226,118 +278,116 @@ var EstatPlugin = function (_CorePlugin) {
       };
     }
   }, {
-    key: 'eStatCreateTag',
+    key: "eStatCreateTag",
     value: function eStatCreateTag(recreate) {
       // Library must be loaded and container must be available
-      if (!this._esLoaded || !this._container) return;
+      if (!this._esLoaded || !this._container) return; // Ensure plugin is configured
 
-      // Ensure plugin is configured
-      if (!this._esTagCfg) return;
+      if (!this._esTagCfg) return; // Ensure tag is not already created
 
-      // Ensure tag is not already created
-      if (this._esTag && !recreate) return;
+      if (this._esTag && !recreate) return; // Check for overridable streaming properties
 
-      // Check for overridable streaming properties
       this._esTagCfgHasDuration = !!this._esTagCfg.streaming.streamDuration;
-      this._esTagCfgHasDiffusion = !!this._esTagCfg.streaming.diffusion;
+      this._esTagCfgHasDiffusion = !!this._esTagCfg.streaming.diffusion; // Check if configuration is already satisfied
 
-      // Check if configuration is already satisfied
-      this._esTagCfgSatisfied = this._esTagCfgHasDuration && this._esTagCfgHasDiffusion;
+      this._esTagCfgSatisfied = this._esTagCfgHasDuration && this._esTagCfgHasDiffusion; // Store eStat streaming diffusion (if provided)
 
-      // Store eStat streaming diffusion (if provided)
       if (this._esTagCfgHasDiffusion) {
         this._esDiffusion = this._esTagCfg.streaming.diffusion;
-      }
+      } // Ensure previous tag is stopped (if created)
 
-      // Ensure previous tag is stopped (if created)
+
       if (this._esTag) {
         this.ensureTagIsStopped(this._esTag);
-      }
+      } // Reset events
 
-      // Reset events
-      this._esEvents = {};
 
-      // Build tag configuration
+      this._esEvents = {}; // Build tag configuration
+
       var tagCfg = {};
-      _clappr.$.extend(true, tagCfg, this.eStatTagDefaultConfig(), this._esTagCfg);
 
-      // Create eStat stream tag instance (Also trigger authentication request)
+      _clappr.$.extend(true, tagCfg, this.eStatTagDefaultConfig(), this._esTagCfg); // Create eStat stream tag instance (Also trigger authentication request)
+
+
       this._esTag = new window.eStatTag(tagCfg); // eslint-disable-line new-cap
     }
   }, {
-    key: 'eStatSatisfyTagCfg',
+    key: "eStatSatisfyTagCfg",
     value: function eStatSatisfyTagCfg() {
-      var cfg = { streaming: {}
+      var cfg = {
+        streaming: {} // Resolve eStat streaming diffusion according playback type
 
-        // Resolve eStat streaming diffusion according playback type
-      };if (!this._esTagCfgHasDiffusion) {
+      };
+
+      if (!this._esTagCfgHasDiffusion) {
         if (this.isLive) {
           cfg.streaming.diffusion = this._container.isDvrEnabled() ? 'timeshifting' : 'live';
         } else {
           cfg.streaming.diffusion = 'replay';
         }
-        this._esDiffusion = cfg.streaming.diffusion;
-      }
 
-      // Set stream duration (only if available)
+        this._esDiffusion = cfg.streaming.diffusion;
+      } // Set stream duration (only if available)
+
+
       if (!this._esTagCfgHasDuration && !this.isLive) {
         cfg.streaming.streamDuration = this.trunc(this.playerDuration);
-      }
+      } // Satisfy eStat tag configuration
 
-      // Satisfy eStat tag configuration
+
       this._esTag && this._esTag.set(cfg);
       this._esTagCfgSatisfied = true;
     }
   }, {
-    key: 'esTagNotify',
+    key: "esTagNotify",
     value: function esTagNotify(eventName, pos) {
       if (this._esDebug === true) {
         console.log(this.name + ' plugin : notify ' + eventName + ' event');
       }
+
       this._esTag && this._esTag.notifyPlayer(eventName, pos);
     }
   }, {
-    key: 'eStatTag',
+    key: "eStatTag",
     value: function eStatTag() {
       return this._esTag;
     }
   }, {
-    key: 'trunc',
+    key: "trunc",
     value: function trunc(n) {
       return parseInt(n, 10);
     }
   }, {
-    key: 'recallEvent',
+    key: "recallEvent",
     value: function recallEvent(name, pos) {
       this._esEvents[name] = pos;
     }
   }, {
-    key: 'forgetEvent',
+    key: "forgetEvent",
     value: function forgetEvent(name) {
       delete this._esEvents[name];
     }
   }, {
-    key: 'posEvent',
+    key: "posEvent",
     value: function posEvent(name) {
       return this._esEvents.hasOwnProperty(name) ? this._esEvents[name] : -1;
     }
   }, {
-    key: 'onTimeUpdate',
+    key: "onTimeUpdate",
     value: function onTimeUpdate(o) {
       this._position = o.current || 0;
     }
   }, {
-    key: 'onPlay',
+    key: "onPlay",
     value: function onPlay() {
       this.recallEvent('play', this.trunc(this.playerPosition));
       this.forgetEvent('pause');
-      this.forgetEvent('stop');
+      this.forgetEvent('stop'); // Some tag configuration properties are only available during playback
 
-      // Some tag configuration properties are only available during playback
-      if (!this._esTagCfgSatisfied) this.eStatSatisfyTagCfg();
+      if (!this._esTagCfgSatisfied) this.eStatSatisfyTagCfg(); // Check if SEEK player event previously occurred
 
-      // Check if SEEK player event previously occurred
       var pos = this.posEvent('seek');
+
       if (pos > -1) {
         // isTimeshift is "true" if playing time shifted content and "false" if back playing live content
         if (this._esDiffusion === 'timeshifting' && !this.isTimeshift) {
@@ -347,50 +397,46 @@ var EstatPlugin = function (_CorePlugin) {
           // Replay or time shifted content
           this.esTagNotify('pause', pos);
         }
-        this.forgetEvent('seek');
-      }
 
-      // Player may buffer during playback WITH or WITHOUT "freeze" video display content.
+        this.forgetEvent('seek');
+      } // Player may buffer during playback WITH or WITHOUT "freeze" video display content.
       // FIXME: notify tag with 'pause' event if BUFFERFULL player event occured ?
       // But this fix may significantly increase sessions ? (if live content)
+
 
       this.esTagNotify('play');
     }
   }, {
-    key: 'onStop',
+    key: "onStop",
     value: function onStop() {
       // Recall STOP player event and forget PLAY player event
       this.recallEvent('stop', this.trunc(this.playerPosition));
       this.forgetEvent('play');
-
       this.esTagNotify('stop');
     }
   }, {
-    key: 'onPause',
+    key: "onPause",
     value: function onPause() {
       // Recall PAUSE player event and forget PLAY player event
       this.recallEvent('pause', this.trunc(this.playerPosition));
-      this.forgetEvent('play');
-
-      // PAUSE player event is triggered when end of VOD content is reached.
+      this.forgetEvent('play'); // PAUSE player event is triggered when end of VOD content is reached.
       // In this case, eStat tag expect to be notified with 'stop' (not 'pause').
       // Therefore, PAUSE player event is ignored and 'stop' is notified in ENDED player event
-      if (!this.isLive && this.isEnd) return;
 
-      // PAUSE player event is trigerred when "native" HTML5 video LIVE content is stopped.
+      if (!this.isLive && this.isEnd) return; // PAUSE player event is trigerred when "native" HTML5 video LIVE content is stopped.
       // In this case, eStat tag does not expect to be notified with 'pause' after 'stop'.
       // UPDATE: since Clappr 0.2.80, PAUSE player event may also be trigerred on desktop
+
       if (this.posEvent('stop') > -1) {
         this.forgetEvent('stop');
-
         return;
       }
 
       this.esTagNotify('pause');
     }
   }, {
-    key: 'onSeek',
-    value: function onSeek(o) {
+    key: "onSeek",
+    value: function onSeek() {
       /**
        * SEEK operation must be notified to eStat tag like the following :
        *
@@ -403,7 +449,7 @@ var EstatPlugin = function (_CorePlugin) {
       this.recallEvent('seek', this.trunc(this.playerPosition));
     }
   }, {
-    key: 'onBuffering',
+    key: "onBuffering",
     value: function onBuffering() {
       // Recall BUFFERING player event only if PLAY player event occurred
       if (this.posEvent('play') > -1) {
@@ -412,54 +458,55 @@ var EstatPlugin = function (_CorePlugin) {
       }
     }
   }, {
-    key: 'onBufferfull',
+    key: "onBufferfull",
     value: function onBufferfull() {
       // Recall BUFFERFULL player event only if BUFFERING player event occurred
       var pos = this.posEvent('buffering');
+
       if (pos > -1) {
         this.forgetEvent('buffering');
         this.recallEvent('bufferfull', pos);
       }
     }
   }, {
-    key: 'onEnded',
+    key: "onEnded",
     value: function onEnded() {
       // Notify 'stop' to eStat tag if video ended (eStat compliance)
       this.esTagNotify('stop');
     }
   }, {
-    key: 'playerElement',
+    key: "playerElement",
     get: function get() {
       // Container DOM element is used for player element
       return this._container && this._container.el;
     }
   }, {
-    key: 'pluginVersion',
+    key: "pluginVersion",
     get: function get() {
-      return "0.4.0";
+      return "0.4.1";
     }
   }, {
-    key: 'playerPosition',
+    key: "playerPosition",
     get: function get() {
       return this.isLive ? 0 : this._position;
     }
   }, {
-    key: 'playerDuration',
+    key: "playerDuration",
     get: function get() {
       return this.isLive ? 0 : this._container && this._container.getDuration();
     }
   }, {
-    key: 'isLive',
+    key: "isLive",
     get: function get() {
       return this._container.getPlaybackType() === _clappr.Playback.LIVE;
     }
   }, {
-    key: 'isTimeshift',
+    key: "isTimeshift",
     get: function get() {
       return this._container.isDvrEnabled() && this._container.isDvrInUse();
     }
   }, {
-    key: 'isEnd',
+    key: "isEnd",
     get: function get() {
       return this.trunc(this.playerDuration) === this.trunc(this.playerPosition);
     }
@@ -469,13 +516,13 @@ var EstatPlugin = function (_CorePlugin) {
 }(_clappr.CorePlugin);
 
 exports.default = EstatPlugin;
-module.exports = exports['default'];
+module.exports = exports.default;
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__1__;
 
 /***/ }),
 /* 2 */
@@ -487,35 +534,34 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = _default;
 
-exports.default = function (cb) {
+/**
+ * eStat "mu" library lazy loader.
+ * @function
+ * @param {function} The library loaded callback.
+ * @param {string} The library version. (Default is '5.4')
+ */
+function _default(cb) {
   var version = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '5.4';
-
   var win = window;
   var doc = document;
   var el = 'script';
 
   if (win.eStatTag) {
     if (typeof cb === 'function') cb();
-
     return;
   }
 
   var first = doc.getElementsByTagName(el)[0];
   var script = doc.createElement(el);
-
   script.src = 'https://prof.estat.com/js/mu-' + version + '.js';
   script.async = true;
   if (typeof cb === 'function') script.onload = cb;
   first.parentNode.insertBefore(script, first);
-};
+}
 
-module.exports = exports['default']; /**
-                                      * eStat "mu" library lazy loader.
-                                      * @function
-                                      * @param {function} The library loaded callback.
-                                      * @param {string} The library version. (Default is '5.4')
-                                      */
+module.exports = exports.default;
 
 /***/ })
 /******/ ]);
