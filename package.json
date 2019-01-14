@@ -4,29 +4,25 @@
   "description": "Mediametrie eStat streaming plugin for Clappr player.",
   "main": "dist/clappr-estat-plugin.js",
   "scripts": {
-    "build": "webpack --progress",
-    "build-min": "webpack --progress",
+    "build": "webpack --progress --mode production",
+    "build-min": "webpack --progress --mode production",
     "dist": "npm run lint && npm run build && npm run build-min",
     "lint": "eslint src",
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server --mode development"
   },
   "author": "Karim Slimani <karim@playmedia.fr>",
   "license": "MIT",
   "repository": "playmedia/clappr-estat-plugin",
   "devDependencies": {
-    "babel-core": "^6.23.1",
-    "babel-loader": "^7.0.0",
-    "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-preset-env": "^1.7.0",
-    "clappr": "^0.2.66",
-    "eslint": "^3.19.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.3.0",
-    "eslint-plugin-node": "^5.0.0",
-    "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "webpack": "^3.0.0",
-    "webpack-dev-server": "^2.4.1",
-    "webpack-notifier": "^1.5.0"
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
+    "babel-loader": "^8.0.5",
+    "babel-plugin-add-module-exports": "^1.0.0",
+    "eslint": "^5.12.0",
+    "uglifyjs-webpack-plugin": "^2.1.1",
+    "webpack": "^4.28.3",
+    "webpack-build-notifier": "^0.1.30",
+    "webpack-cli": "^3.2.1",
+    "webpack-dev-server": "^3.1.14"
   }
 }
