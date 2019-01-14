@@ -1,17 +1,19 @@
 module.exports = {
-    "extends": "standard",
-    "plugins": [
-      "standard",
-      "promise"
-    ],
-    "env": {
-      "browser": true
-    },
-    "rules": {
-      "space-before-function-paren": ["error", {
-        "anonymous": "always",
-        "named": "never",
-        "asyncArrow": "always"
-      }]
-    }
+  "extends": "eslint:recommended",
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true,
+  },
+  "rules": {
+    "no-console": "off",
+    "space-before-function-paren": ["error", {
+      "anonymous": "always",
+      "named": "never",
+      "asyncArrow": "always"
+    }]
+  },
+  "parserOptions": {
+      "sourceType": "module"
+  }
 }
