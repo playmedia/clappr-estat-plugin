@@ -12,6 +12,12 @@ export default class EstatPlugin extends CorePlugin {
   constructor(core) {
     super(core)
 
+    if (! this.canLoad()) {
+      console.error && console.error(this.name + ' plugin : Clappr version 0.3.0 or greater not yet supported')
+
+      return
+    }
+
     this._esEvents = {}
     this.configurePlugin()
 
@@ -21,6 +27,12 @@ export default class EstatPlugin extends CorePlugin {
       this._esLoaded = true
       this.eStatCreateTag()
     })
+  }
+
+  canLoad() {
+    let v = version.split('.')
+
+    return v.length > 1 && v[1] < 3
   }
 
   configurePlugin() {
@@ -285,7 +297,7 @@ export default class EstatPlugin extends CorePlugin {
     this.esTagNotify('pause')
   }
 
-  onSeek(o) {
+  onSeek() {
     /**
      * SEEK operation must be notified to eStat tag like the following :
      *
