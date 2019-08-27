@@ -231,7 +231,9 @@ export default class EstatPlugin extends CorePlugin {
   }
 
   posEvent(name) {
-    return this._esEvents.hasOwnProperty(name) ? this._esEvents[name] : -1
+    return Object.prototype.hasOwnProperty.call(this._esEvents, name)
+      ? this._esEvents[name]
+      : -1
   }
 
   onTimeUpdate(o) {
