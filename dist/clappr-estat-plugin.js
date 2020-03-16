@@ -104,15 +104,15 @@ return /******/ (function(modules) { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _clappr = __webpack_require__(1);
 
 var _estatLoader = _interopRequireDefault(__webpack_require__(2));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -135,9 +135,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 /* global PLUGIN_VERSION: false */
-var EstatPlugin =
-/*#__PURE__*/
-function (_CorePlugin) {
+var EstatPlugin = /*#__PURE__*/function (_CorePlugin) {
   _inherits(EstatPlugin, _CorePlugin);
 
   _createClass(EstatPlugin, [{
@@ -165,7 +163,7 @@ function (_CorePlugin) {
 
 
     _this._esLoaded = false;
-    (0, _estatLoader.default)(function () {
+    (0, _estatLoader["default"])(function () {
       _this._esLoaded = true;
 
       _this.eStatCreateTag();
@@ -315,9 +313,8 @@ function (_CorePlugin) {
     key: "eStatSatisfyTagCfg",
     value: function eStatSatisfyTagCfg() {
       var cfg = {
-        streaming: {} // Resolve eStat streaming diffusion according playback type
-
-      };
+        streaming: {}
+      }; // Resolve eStat streaming diffusion according playback type
 
       if (!this._esTagCfgHasDiffusion) {
         if (this.isLive) {
@@ -370,7 +367,7 @@ function (_CorePlugin) {
   }, {
     key: "posEvent",
     value: function posEvent(name) {
-      return this._esEvents.hasOwnProperty(name) ? this._esEvents[name] : -1;
+      return Object.prototype.hasOwnProperty.call(this._esEvents, name) ? this._esEvents[name] : -1;
     }
   }, {
     key: "onTimeUpdate",
@@ -483,7 +480,7 @@ function (_CorePlugin) {
   }, {
     key: "pluginVersion",
     get: function get() {
-      return "0.4.1";
+      return "0.4.2";
     }
   }, {
     key: "playerPosition",
@@ -515,7 +512,7 @@ function (_CorePlugin) {
   return EstatPlugin;
 }(_clappr.CorePlugin);
 
-exports.default = EstatPlugin;
+exports["default"] = EstatPlugin;
 module.exports = exports.default;
 
 /***/ }),
@@ -534,7 +531,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__1__;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = _default;
+exports["default"] = _default;
 
 /**
  * eStat "mu" library lazy loader.
