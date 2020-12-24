@@ -21,7 +21,7 @@
     "eslint": "^6.2.2",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.39.2",
-    "webpack-build-notifier": "^1.1.0",
+    "webpack-build-notifier": "^2.1.1",
     "webpack-cli": "^3.3.7",
     "webpack-dev-server": "^3.8.0"
   }
